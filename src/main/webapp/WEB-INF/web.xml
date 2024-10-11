@@ -11,127 +11,43 @@
 
     <servlet-mapping>
         <servlet-name>UserServlet</servlet-name>
-        <url-pattern>/addEmployee</url-pattern>
+        <url-pattern>/employee</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>EmployeeListServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>EmployeeListServlet</servlet-name>
-        <url-pattern>/employeeList</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>AddEmployeeFormServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AddEmployeeFormServlet</servlet-name>
-        <url-pattern>/addEmployeeForm</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>EditEmployeeServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>EditEmployeeServlet</servlet-name>
-        <url-pattern>/editEmployee</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>FilterEmployeeServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>FilterEmployeeServlet</servlet-name>
-        <url-pattern>/filterEmployees</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>SearchForEmployeeServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SearchForEmployeeServlet</servlet-name>
-        <url-pattern>/searchEmployee</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>DeleteEmployeeServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>DeleteEmployeeServlet</servlet-name>
-        <url-pattern>/deleteEmployee</url-pattern>
-    </servlet-mapping>
-    
-<!-- job offer -->
-    
-    <servlet>
-        <servlet-name>AddJobOfferFormServlet</servlet-name>
+        <servlet-name>jobOfferServlet</servlet-name>
         <servlet-class>com.hrmanagementsystem.controller.JobOfferServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AddJobOfferFormServlet</servlet-name>
-        <url-pattern>/addJobOfferForm</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>AddJobOfferServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.JobOfferServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AddJobOfferServlet</servlet-name>
-        <url-pattern>/addJobOffer</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>DeleteJobOfferServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.JobOfferServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>DeleteJobOfferServlet</servlet-name>
-        <url-pattern>/deleteJobOffer</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>AddApplicationServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.ApplicationServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AddApplicationServlet</servlet-name>
-        <url-pattern>/addApplication</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>AddApplicationFormServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.ApplicationServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AddApplicationFormServlet</servlet-name>
-        <url-pattern>/addApplicationForm</url-pattern>
+        <servlet-name>jobOfferServlet</servlet-name>
+        <url-pattern>/jobOffer</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>allApplicationsServlete</servlet-name>
+        <servlet-name>applicationServlet</servlet-name>
         <servlet-class>com.hrmanagementsystem.controller.ApplicationServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>allApplicationsServlete</servlet-name>
-        <url-pattern>/allApplications</url-pattern>
+        <servlet-name>applicationServlet</servlet-name>
+        <url-pattern>/application</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>downloadResumeServlet</servlet-name>
-        <servlet-class>com.hrmanagementsystem.controller.ApplicationServlet</servlet-class>
+        <servlet-name>holidaysServlet</servlet-name>
+        <servlet-class>com.hrmanagementsystem.controller.HolidayServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>downloadResumeServlet</servlet-name>
-        <url-pattern>/downloadResume</url-pattern>
+        <servlet-name>holidaysServlet</servlet-name>
+        <url-pattern>/holidays</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>loginFormServlet</servlet-name>
+        <servlet-class>com.hrmanagementsystem.controller.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loginFormServlet</servlet-name>
+        <url-pattern>/loginForm</url-pattern>
     </servlet-mapping>
 
 </web-app>

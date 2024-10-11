@@ -3,8 +3,7 @@ package com.hrmanagementsystem.controller;
 import com.hrmanagementsystem.dao.EmployeeDAO;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
-import com.hrmanagementsystem.repository.implementations.EmployeeRepositoryImpl;
-import com.hrmanagementsystem.service.EmployeeService;
+import org.mindrot.jbcrypt.BCrypt;
 import jakarta.servlet.annotation.WebServlet;
 
 import javax.servlet.ServletException;
@@ -53,14 +52,14 @@ public class UserServlet extends HttpServlet {
     }
 
     private void addEmployeeForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("views/addEmployee.jsp").forward(request, response);
+        request.getRequestDispatcher("view/AddEmployee.jsp").forward(request, response);
     }
 
     private void editEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         User employee = EmployeeDAO.getById(id);
         request.setAttribute("employee", employee);
-        request.getRequestDispatcher("views/editEmployee.jsp").forward(request, response);
+        request.getRequestDispatcher("view/editEmployee.jsp").forward(request, response);
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
@@ -72,11 +71,12 @@ public class UserServlet extends HttpServlet {
         String hireDateStr = request.getParameter("hireDate");
         String position = request.getParameter("position");
         int kidsNum = Integer.parseInt(request.getParameter("kidsNum"));
-        int totalSalary = Integer.parseInt(request.getParameter("totalSalary"));
         String situation = request.getParameter("situation");
         String department = request.getParameter("department");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date birthday = null;
@@ -88,18 +88,47 @@ public class UserServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+        int familyAllowance = calculateFamilyAllowance(salary, kidsNum);
+
+        int totalSalary = salary + familyAllowance;
+
         User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
-                totalSalary, situation, department, email, password, Role.Employee);
+                totalSalary, situation, department, email, hashedPassword, Role.Employee);
 
         EmployeeDAO.save(user);
 
-        response.sendRedirect("employeeList?action=employeeList");
+        response.sendRedirect("employee?action=employeeList");
     }
 
     protected void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         EmployeeDAO.delete(id);
-        response.sendRedirect("employeeList?action=employeeList");
+        response.sendRedirect("employee?action=employeeList");
+    }
+
+    private int calculateFamilyAllowance(int salary, int kidsNum) {
+        int allowancePerChild;
+        int maxChildren = Math.min(kidsNum, 6);
+
+        if (salary < 6000) {
+            allowancePerChild = 300;
+        } else if (salary > 8000) {
+            allowancePerChild = 200;
+        } else {
+            double factor = (salary - 6000.0) / 2000.0;
+            allowancePerChild = (int) (300 - (factor * 100));
+        }
+
+        int totalAllowance = 0;
+        for (int i = 0; i < maxChildren; i++) {
+            if (i < 3) {
+                totalAllowance += allowancePerChild;
+            } else {
+                totalAllowance += (salary < 6000) ? 150 : 110;
+            }
+        }
+
+        return totalAllowance;
     }
 
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -112,7 +141,6 @@ public class UserServlet extends HttpServlet {
         String hireDateStr = request.getParameter("hireDate");
         String position = request.getParameter("position");
         int kidsNum = Integer.parseInt(request.getParameter("kidsNum"));
-        int totalSalary = Integer.parseInt(request.getParameter("totalSalary"));
         String situation = request.getParameter("situation");
         String department = request.getParameter("department");
         String email = request.getParameter("email");
@@ -127,12 +155,16 @@ public class UserServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+        int familyAllowance = calculateFamilyAllowance(salary, kidsNum);
+
+        int totalSalary = salary + familyAllowance;
+
         User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
                 totalSalary, situation, department, email, password, Role.Employee);
         user.setId(id);
         EmployeeDAO.update(user);
 
-        response.sendRedirect("employeeList?action=employeeList");
+        response.sendRedirect("employee?action=employeeList");
     }
 
 //    private void searchEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -151,6 +183,6 @@ public class UserServlet extends HttpServlet {
         List<User> employeeList = EmployeeDAO.getAll();
         request.setAttribute("employees", employeeList);
         System.out.println(employeeList);
-        request.getRequestDispatcher("views/employeeList.jsp").forward(request, response);
+        request.getRequestDispatcher("view/DisplayAllEmployees.jsp").forward(request, response);
     }
 }

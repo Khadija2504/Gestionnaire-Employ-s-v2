@@ -29,6 +29,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public User() {}
+
     public User(String firstName, String lastName, String phoneNumber, int salary, Date birthday, Date hireDate, String position, int kidsNum, int totalSalary, String situation, String department, String email, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,6 +50,17 @@ public class User {
 
     public boolean authenticate(String email, String password) {
         return this.email.equals(email) && this.password.equals(password);
+    }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -144,6 +157,14 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
 

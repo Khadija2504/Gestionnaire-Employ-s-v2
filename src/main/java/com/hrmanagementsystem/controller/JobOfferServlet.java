@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class JobOfferServlet extends HttpServlet {
 
@@ -32,6 +33,9 @@ public class JobOfferServlet extends HttpServlet {
             case "deleteJobOffer":
                 deleteJobOffer(req, resp);
                 break;
+            case "JobOfferList":
+                JobOfferList(req, resp);
+                break;
         }
     }
 
@@ -45,12 +49,18 @@ public class JobOfferServlet extends HttpServlet {
         LocalDateTime publishedDate = LocalDateTime.now();
         JobOffer jobOffer = new JobOffer(title, description, publishedDate);
         JobOfferDAO.save(jobOffer);
-        resp.sendRedirect("addJobOffer?action=addJobOffer");
+        resp.sendRedirect("addJobOfferForm?action=addJobOfferForm");
     }
 
     protected void deleteJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         JobOfferDAO.delete(id);
         resp.sendRedirect("JobOfferList?action=jobOfferList");
+    }
+
+    private void JobOfferList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<JobOffer> jobOffers = JobOfferDAO.getAll();
+        req.setAttribute("jobOffers", jobOffers);
+        req.getRequestDispatcher("view/DisplayAllJobOffers.jsp").forward(req, resp);
     }
 }

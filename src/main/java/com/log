@@ -1,0 +1,142 @@
+Using CATALINA_BASE:   "C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46"
+Using CATALINA_HOME:   "C:\Apache\apache-tomcat-9.0.95"
+Using CATALINA_TMPDIR: "C:\Apache\apache-tomcat-9.0.95\temp"
+Using JRE_HOME:        "C:\Program Files\Java\jdk-23"
+Using CLASSPATH:       "C:\Apache\apache-tomcat-9.0.95\bin\bootstrap.jar;C:\Apache\apache-tomcat-9.0.95\bin\tomcat-juli.jar"
+Using CATALINA_OPTS:   ""
+NOTE: Picked up JDK_JAVA_OPTIONS:  --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+11-Oct-2024 16:48:53.628 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.95
+11-Oct-2024 16:48:53.630 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Sep 13 2024 18:07:47 UTC
+11-Oct-2024 16:48:53.630 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.95.0
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Windows 11
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            10.0
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             C:\Program Files\Java\jdk-23
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           23+37-2369
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46
+11-Oct-2024 16:48:53.631 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         C:\Apache\apache-tomcat-9.0.95
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46\conf\logging.properties
+11-Oct-2024 16:48:53.632 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote=
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.port=1099
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.ssl=false
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.password.file=C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46\jmxremote.password
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.access.file=C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46\jmxremote.access
+11-Oct-2024 16:48:53.633 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.rmi.server.hostname=127.0.0.1
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=C:\Users\safiy\AppData\Local\JetBrains\IntelliJIdea2024.2\tomcat\53bc7852-ae33-453c-81a5-8eb7d9938a46
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=C:\Apache\apache-tomcat-9.0.95
+11-Oct-2024 16:48:53.634 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=C:\Apache\apache-tomcat-9.0.95\temp
+11-Oct-2024 16:48:53.638 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent Loaded Apache Tomcat Native library [1.3.1] using APR version [1.7.4].
+11-Oct-2024 16:48:53.638 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+11-Oct-2024 16:48:53.638 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+11-Oct-2024 16:48:53.642 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+11-Oct-2024 16:48:53.850 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+11-Oct-2024 16:48:53.877 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [431] milliseconds
+11-Oct-2024 16:48:53.939 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+11-Oct-2024 16:48:53.939 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.95]
+11-Oct-2024 16:48:53.952 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+11-Oct-2024 16:48:53.994 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [114] milliseconds
+Connected to server
+11-Oct-2024 16:48:54.652 WARNING [RMI TCP Connection(2)-127.0.0.1] org.apache.tomcat.util.descriptor.web.WebXml.setVersion Unknown version string [6.0]. Default version will be used.
+11-Oct-2024 16:48:55.588 INFO [RMI TCP Connection(2)-127.0.0.1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+11-Oct-2024 16:49:03.969 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [C:\Apache\apache-tomcat-9.0.95\webapps\manager]
+11-Oct-2024 16:49:04.074 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [C:\Apache\apache-tomcat-9.0.95\webapps\manager] has finished in [105] ms
+11-Oct-2024 16:49:11.317 INFO [http-nio-8080-exec-4] org.hibernate.jpa.internal.util.LogHelper.logPersistenceUnitInformation HHH000204: Processing PersistenceUnitInfo [name: hr_management_pu]
+11-Oct-2024 16:49:11.579 INFO [http-nio-8080-exec-4] org.hibernate.Version.logVersion HHH000412: Hibernate ORM core version 5.4.27.Final
+11-Oct-2024 16:49:12.194 INFO [http-nio-8080-exec-4] org.hibernate.annotations.common.reflection.java.JavaReflectionManager.<clinit> HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+11-Oct-2024 16:49:12.572 WARN [http-nio-8080-exec-4] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.configure HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+11-Oct-2024 16:49:12.579 INFO [http-nio-8080-exec-4] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/RHManagementSystem?useSSL=false]
+11-Oct-2024 16:49:12.584 INFO [http-nio-8080-exec-4] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001001: Connection properties: {user=postgres, password=****}
+11-Oct-2024 16:49:12.584 INFO [http-nio-8080-exec-4] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001003: Autocommit mode: false
+11-Oct-2024 16:49:12.594 INFO [http-nio-8080-exec-4] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl$PooledConnections.<init> HHH000115: Hibernate connection pool size: 20 (min=1)
+11-Oct-2024 16:49:12.934 INFO [http-nio-8080-exec-4] org.hibernate.dialect.Dialect.<init> HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+11-Oct-2024 16:49:15.106 INFO [http-nio-8080-exec-4] org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@3f8bec20] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+11-Oct-2024 16:49:15.206 INFO [http-nio-8080-exec-4] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator.initiateService HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+Login attempt - Email: hh@gmail.com
+Hibernate: 
+    select
+        user0_.id as id1_5_,
+        user0_.birthday as birthday2_5_,
+        user0_.department as departme3_5_,
+        user0_.email as email4_5_,
+        user0_.firstName as firstnam5_5_,
+        user0_.hireDate as hiredate6_5_,
+        user0_.kidsNum as kidsnum7_5_,
+        user0_.lastName as lastname8_5_,
+        user0_.password as password9_5_,
+        user0_.phoneNumber as phonenu10_5_,
+        user0_.position as positio11_5_,
+        user0_.role as role12_5_,
+        user0_.salary as salary13_5_,
+        user0_.situation as situati14_5_,
+        user0_.totalSalary as totalsa15_5_ 
+    from
+        users user0_ 
+    where
+        user0_.email=?
+User found: false
+Login attempt - Email: khh@gmail.com
+Hibernate: 
+    select
+        user0_.id as id1_5_,
+        user0_.birthday as birthday2_5_,
+        user0_.department as departme3_5_,
+        user0_.email as email4_5_,
+        user0_.firstName as firstnam5_5_,
+        user0_.hireDate as hiredate6_5_,
+        user0_.kidsNum as kidsnum7_5_,
+        user0_.lastName as lastname8_5_,
+        user0_.password as password9_5_,
+        user0_.phoneNumber as phonenu10_5_,
+        user0_.position as positio11_5_,
+        user0_.role as role12_5_,
+        user0_.salary as salary13_5_,
+        user0_.situation as situati14_5_,
+        user0_.totalSalary as totalsa15_5_ 
+    from
+        users user0_ 
+    where
+        user0_.email=?
+User found: true
+Stored password hash: $2a$10$XHHvYhWqGROpPaRPqDeBxeBiPTspIVXcY8qP/Mz2gMknaTpEAL5x6
+Password matches: true
+11-Oct-2024 16:49:19.596 INFO [http-nio-8080-exec-5] org.hibernate.jpa.internal.util.LogHelper.logPersistenceUnitInformation HHH000204: Processing PersistenceUnitInfo [name: hr_management_pu]
+11-Oct-2024 16:49:19.644 WARN [http-nio-8080-exec-5] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.configure HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+11-Oct-2024 16:49:19.644 INFO [http-nio-8080-exec-5] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/RHManagementSystem?useSSL=false]
+11-Oct-2024 16:49:19.644 INFO [http-nio-8080-exec-5] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001001: Connection properties: {user=postgres, password=****}
+11-Oct-2024 16:49:19.644 INFO [http-nio-8080-exec-5] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl.buildCreator HHH10001003: Autocommit mode: false
+11-Oct-2024 16:49:19.644 INFO [http-nio-8080-exec-5] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl$PooledConnections.<init> HHH000115: Hibernate connection pool size: 20 (min=1)
+11-Oct-2024 16:49:19.704 INFO [http-nio-8080-exec-5] org.hibernate.dialect.Dialect.<init> HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+11-Oct-2024 16:49:19.834 INFO [http-nio-8080-exec-5] org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@5656566d] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+11-Oct-2024 16:49:19.894 INFO [http-nio-8080-exec-5] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator.initiateService HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+Hibernate: 
+    select
+        user0_.id as id1_5_,
+        user0_.birthday as birthday2_5_,
+        user0_.department as departme3_5_,
+        user0_.email as email4_5_,
+        user0_.firstName as firstnam5_5_,
+        user0_.hireDate as hiredate6_5_,
+        user0_.kidsNum as kidsnum7_5_,
+        user0_.lastName as lastname8_5_,
+        user0_.password as password9_5_,
+        user0_.phoneNumber as phonenu10_5_,
+        user0_.position as positio11_5_,
+        user0_.role as role12_5_,
+        user0_.salary as salary13_5_,
+        user0_.situation as situati14_5_,
+        user0_.totalSalary as totalsa15_5_ 
+    from
+        users user0_ 
+    where
+        user0_.role=?
+[com.hrmanagementsystem.entity.User@61d9476f, com.hrmanagementsystem.entity.User@232f6558, com.hrmanagementsystem.entity.User@27c4520a]

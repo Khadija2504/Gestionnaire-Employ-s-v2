@@ -31,6 +31,7 @@
   </style>
 </head>
 <body>
+<%@ include file="navbar.jsp" %>
 <h1>All Applications</h1>
 
 <c:choose>
@@ -57,7 +58,7 @@
           <td>
             <c:choose>
               <c:when test="${not empty app.resume}">
-                <a href="downloadResume?action=downloadResume&applicationId=${app.id}" class="download-link">
+                <a href="application?action=downloadResume&applicationId=${app.id}" class="download-link">
                   Download Resume (${app.resume})
                 </a>
               </c:when>
@@ -75,7 +76,5 @@
     <p>No applications found for this job offer.</p>
   </c:otherwise>
 </c:choose>
-
-<p><a href="javascript:history.back()">Back to previous page</a></p>
 </body>
 </html>
