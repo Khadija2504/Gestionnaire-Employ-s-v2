@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/login")
@@ -25,6 +26,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         emf = Persistence.createEntityManagerFactory("hr_management_pu");
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -47,19 +53,36 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("Password matches: " + passwordMatches);
 
                 if (passwordMatches) {
-                    request.getSession().setAttribute("user", user);
-                    response.sendRedirect(request.getContextPath() + "/employee?action=employeeList");
-                    return;
-                }
-            }
+                    System.out.println("User logged in successfully");
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", user);
+                    System.out.println("User role: " + user.getRole());
 
-            request.setAttribute("error", "Invalid email or password");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    switch (user.getRole()) {
+                        case Admin:
+                            response.sendRedirect(request.getContextPath() + "/employee?action=employeeList");
+                            break;
+                        case RH:
+                            response.sendRedirect(request.getContextPath() + "/jobOffer?action=jobOfferList");
+                            break;
+                        case Recruiter:
+                            response.sendRedirect(request.getContextPath() + "/jobOffer?action=jobOfferList");
+                        case Employee:
+                            response.sendRedirect(request.getContextPath() + "/employee?action=employeeList");
+                            break;
+                    }
+                } else {
+                    request.setAttribute("error", "Invalid email or password");
+                    request.getRequestDispatcher("login").forward(request, response);
+                }
+            } else {
+                request.setAttribute("error", "Invalid email or password");
+                request.getRequestDispatcher("login").forward(request, response);
+            }
         } finally {
             em.close();
         }
     }
-
     @Override
     public void destroy() {
         emf.close();

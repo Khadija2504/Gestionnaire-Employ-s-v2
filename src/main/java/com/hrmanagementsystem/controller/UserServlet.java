@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,6 +76,7 @@ public class UserServlet extends HttpServlet {
         String department = request.getParameter("department");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String nssu = request.getParameter("nssu");
 
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
@@ -93,11 +95,16 @@ public class UserServlet extends HttpServlet {
         int totalSalary = salary + familyAllowance;
 
         User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
-                totalSalary, situation, department, email, hashedPassword, Role.Employee);
+                totalSalary, situation, department, email, hashedPassword, nssu, Role.Employee);
 
-        EmployeeDAO.save(user);
-
-        response.sendRedirect("employee?action=employeeList");
+        boolean added = EmployeeDAO.save(user);
+        if (added) {
+            response.sendRedirect("employee?action=employeeList");
+        } else {
+            HttpSession session = request.getSession();
+            session.setAttribute("errorMessage", "Failed to add employee. Email may already exist.");
+            response.sendRedirect("employee?action=addEmployeeForm");
+        }
     }
 
     protected void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -145,6 +152,8 @@ public class UserServlet extends HttpServlet {
         String department = request.getParameter("department");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String nssu = request.getParameter("nssu");
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date birthday = null;
         Date hireDate = null;
@@ -160,11 +169,16 @@ public class UserServlet extends HttpServlet {
         int totalSalary = salary + familyAllowance;
 
         User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
-                totalSalary, situation, department, email, password, Role.Employee);
+                totalSalary, situation, department, email, password, nssu, Role.Employee);
         user.setId(id);
-        EmployeeDAO.update(user);
-
-        response.sendRedirect("employee?action=employeeList");
+        boolean updated = EmployeeDAO.update(user);
+        if (updated) {
+            response.sendRedirect("employee?action=employeeList");
+        } else {
+            HttpSession session = request.getSession();
+            session.setAttribute("errorMessage", "Failed to update employee. Email may already exist.");
+            response.sendRedirect("employee?action=editEmployee&id="+id);
+        }
     }
 
 //    private void searchEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -13,6 +13,7 @@
 <body>
 <nav>
     <ul>
+        <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
         <li><a href="${pageContext.request.contextPath}/employee?action=addEmployeeForm">Add employee</a></li>
         <li><a href="${pageContext.request.contextPath}/employee?action=employeeList">Employees list</a></li>
         <li><a href="${pageContext.request.contextPath}/jobOffer?action=addJobOfferForm">Add job offer</a></li>

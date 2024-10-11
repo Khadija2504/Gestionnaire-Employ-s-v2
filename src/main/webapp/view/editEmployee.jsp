@@ -64,9 +64,10 @@
       background-color: #0056b3;
     }
 
-    .error {
+    .error-message {
       color: red;
-      font-size: 0.9em;
+      margin-top: 10px;
+      text-align: center;
     }
   </style>
 </head>
@@ -74,8 +75,11 @@
 <%@ include file="navbar.jsp" %>
 <div class="container">
   <h2>Edit Employee</h2>
+  <c:if test="${not empty errorMessage}">
+    <div class="error-message">${errorMessage}</div>
+  </c:if>
   <form action="employee?action=updateEmployee" method="post">
-    <input type="hidden" name="action" value="updateEmployee">
+    <%--@declare id="nssu"--%><input type="hidden" name="action" value="updateEmployee">
     <input type="hidden" name="id" value="${employee.id}">
 
     <label for="firstName">First Name:</label>
@@ -89,6 +93,9 @@
 
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" value="${employee.email}" required>
+
+    <label for="nssu">Number of single social security</label>
+    <input name="nssu" type="text" id="nssu" value="${employee.nssu}">
 
     <label for="salary">Salary:</label>
     <input type="number" id="salary" name="salary" value="${employee.salary}" required>

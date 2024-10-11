@@ -1,9 +1,7 @@
 package com.hrmanagementsystem.controller;
 
-import com.hrmanagementsystem.dao.ApplicationDAO;
 import com.hrmanagementsystem.dao.EmployeeDAO;
 import com.hrmanagementsystem.dao.HolidayDAO;
-import com.hrmanagementsystem.entity.Application;
 import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.HolidayStatus;

@@ -23,15 +23,17 @@ public class User {
     private int totalSalary;
     private String situation;
     private String department;
+    @Column(unique = true)
     private String email;
     private String password;
-
+    @Column(unique = true)
+    private String nssu;
     @Enumerated(EnumType.STRING)
     private Role role;
 
     public User() {}
 
-    public User(String firstName, String lastName, String phoneNumber, int salary, Date birthday, Date hireDate, String position, int kidsNum, int totalSalary, String situation, String department, String email, String password, Role role) {
+    public User(String firstName, String lastName, String phoneNumber, int salary, Date birthday, Date hireDate, String position, int kidsNum, int totalSalary, String situation, String department, String email, String password, String nssu, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -45,6 +47,7 @@ public class User {
         this.department = department;
         this.email = email;
         this.password = password;
+        this.nssu = nssu;
         this.role = role;
     }
 
@@ -165,6 +168,14 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getNssu() {
+        return nssu;
+    }
+
+    public void setNssu(String nssu) {
+        this.nssu = nssu;
     }
 }
 

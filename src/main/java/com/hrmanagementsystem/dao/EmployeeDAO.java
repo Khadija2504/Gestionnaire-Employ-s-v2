@@ -3,10 +3,7 @@ package com.hrmanagementsystem.dao;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 public class EmployeeDAO {
@@ -22,15 +19,39 @@ public class EmployeeDAO {
         }
     }
 
-    public static void save(User user) {
+    public static boolean getByEmail(String email) {
         EntityManager em = emf.createEntityManager();
         try {
-            em.getTransaction().begin();
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
+            query.setParameter("email", email);
+            return query.getSingleResult() > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public static boolean save(User user) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = null;
+        try {
+            tx = em.getTransaction();
+            tx.begin();
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
+            query.setParameter("email", user.getEmail());
+            boolean emailExists = query.getSingleResult() > 0;
+
+            if (emailExists) {
+                tx.rollback();
+                return false;
+            }
+
             em.persist(user);
-            em.getTransaction().commit();
+            tx.commit();
+            return true;
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            return false;
         } finally {
             em.close();
         }
@@ -53,15 +74,28 @@ public class EmployeeDAO {
         }
     }
 
-    public static void update(User user) {
+    public static boolean update(User user) {
         EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = null;
         try {
-            em.getTransaction().begin();
-            em.merge(user);
-            em.getTransaction().commit();
+            tx = em.getTransaction();
+            tx.begin();
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
+            query.setParameter("email", user.getEmail());
+            boolean emailExists = query.getSingleResult() > 0;
+
+            if (emailExists) {
+                tx.rollback();
+                return false;
+            }
+
+            em.persist(user);
+            tx.commit();
+            return true;
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            return false;
         } finally {
             em.close();
         }
