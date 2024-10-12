@@ -41,6 +41,9 @@
     <label for="title">Job Title:</label>
     <input type="text" id="title" name="title" required>
 
+    <label for="expiredDate">Expired date:</label>
+    <input type="date" id="expiredDate" name="expiredDate" required>
+
     <label for="description">Job Description:</label>
     <textarea id="description" name="description" rows="5" required></textarea>
 

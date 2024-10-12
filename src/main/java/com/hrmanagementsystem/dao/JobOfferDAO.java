@@ -1,6 +1,7 @@
 package com.hrmanagementsystem.dao;
 
 import com.hrmanagementsystem.entity.JobOffer;
+import com.hrmanagementsystem.enums.JobOfferStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -21,6 +22,20 @@ public class JobOfferDAO {
     }
 
     public static void save(JobOffer jobOffer) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(jobOffer);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public static void update(JobOffer jobOffer) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
@@ -55,6 +70,15 @@ public class JobOfferDAO {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<JobOffer> query = em.createQuery("SELECT jo FROM JobOffer jo", JobOffer.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    public static List<JobOffer> getByStatus(JobOfferStatus status) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<JobOffer> query = em.createQuery("FROM JobOffer WHERE status = :status", JobOffer.class);
             return query.getResultList();
         } finally {
             em.close();

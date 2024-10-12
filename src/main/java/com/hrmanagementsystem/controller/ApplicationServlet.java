@@ -220,47 +220,4 @@ public class ApplicationServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
         }
     }
-
-    private void updateHolidayStatus(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int appId = Integer.parseInt(req.getParameter("applicationId"));
-        String newStatus = req.getParameter("status");
-        int jobOfferId = Integer.parseInt(req.getParameter("jobOfferId"));
-
-        Application application = ApplicationDAO.getbyId(appId);
-        if (application == null) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Application not found");
-            return;
-        }
-
-        try {
-            ApplicationStatus status = ApplicationStatus.valueOf(newStatus);
-            application.setStatus(status);
-            ApplicationDAO.updateStatus(application);
-
-            String candidateEmail = application.getCandidateEmail();
-            if(Objects.equals(status.toString(), "Accepted")) {
-                String message = "ur application has been accepted for the job offer that u applied !!";
-                EmailSender.sendEmail(candidateEmail, "Application accepted", message);
-
-                Notification notification = new Notification();
-                notification.setMessage(message);
-                notification.setNotificationDate(new Date());
-                NotificationDAO.save(notification);
-
-                resp.sendRedirect("application?action=getAllApplications&jobOfferId=" + jobOfferId);
-            } else {
-                String message = "ur application has been refused for the job offer that u applied, good luck in the next job offer!";
-                EmailSender.sendEmail(candidateEmail, "Application refused", message);
-
-                Notification notification = new Notification();
-                notification.setMessage(message);
-                notification.setNotificationDate(new Date());
-                NotificationDAO.save(notification);
-
-                resp.sendRedirect("application?action=getAllApplications&jobOfferId=" + jobOfferId);
-            }
-        } catch (IllegalArgumentException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
-        }
-    }
 }

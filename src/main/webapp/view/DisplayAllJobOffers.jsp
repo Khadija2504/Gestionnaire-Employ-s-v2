@@ -30,6 +30,7 @@
         <th>Title</th>
         <th>Description</th>
         <th>Published Date</th>
+        <th>Status</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -39,6 +40,7 @@
             <td>${jobOffer.title}</td>
             <td>${jobOffer.description}</td>
             <td>${jobOffer.publishedDate}</td>
+            <td>${jobOffer.status}</td>
             <td>
                 <c:if test="${user.role == 'Employee'}">
                     <a href="application?action=addApplicationForm&jobOfferId=${jobOffer.id}">Apply</a>

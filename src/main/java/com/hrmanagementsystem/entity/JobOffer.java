@@ -1,5 +1,7 @@
 package com.hrmanagementsystem.entity;
 
+import com.hrmanagementsystem.enums.JobOfferStatus;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,15 +16,19 @@ public class JobOffer {
     private String description;
 
     private LocalDateTime publishedDate;
-
+    private LocalDateTime expiredDate;
+    @Enumerated(EnumType.STRING)
+    private JobOfferStatus status;
     public JobOffer() {
 
     }
 
-    public JobOffer(String title, String description, LocalDateTime publishedDate) {
+    public JobOffer(String title, String description, LocalDateTime publishedDate, LocalDateTime expiredDate, JobOfferStatus status) {
         this.title = title;
         this.description = description;
         this.publishedDate = publishedDate;
+        this.expiredDate = expiredDate;
+        this.status = status;
     }
 
     public int getId() {
@@ -54,6 +60,22 @@ public class JobOffer {
 
     public void setPublishedDate(LocalDateTime publishedDate) {
         this.publishedDate = publishedDate;
+    }
+
+    public LocalDateTime getExpiredDate() {
+        return expiredDate;
+    }
+
+    public void setExpiredDate(LocalDateTime expiredDate) {
+        this.expiredDate = expiredDate;
+    }
+
+    public JobOfferStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobOfferStatus status) {
+        this.status = status;
     }
 }
 
