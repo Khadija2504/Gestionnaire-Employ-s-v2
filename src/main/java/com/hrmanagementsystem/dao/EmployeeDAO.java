@@ -101,6 +101,19 @@ public class EmployeeDAO {
         }
     }
 
+    public static User getByUsername(String username) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM User u WHERE u.firstName = :username", User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
     public static List<User> getAll() {
         EntityManager em = emf.createEntityManager();
         try {

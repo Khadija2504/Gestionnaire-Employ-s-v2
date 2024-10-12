@@ -13,8 +13,37 @@ public class Notification {
     private String message;
     private Date notificationDate;
 
-    public Notification() {
+    public Notification(String message, Date notificationDate) {
+        this.message = message;
+        this.notificationDate = notificationDate;
     }
 
+    public Notification() {
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Date getNotificationDate() {
+        return notificationDate;
+    }
+
+    public void setNotificationDate(Date notificationDate) {
+        this.notificationDate = notificationDate;
+    }
 }
 

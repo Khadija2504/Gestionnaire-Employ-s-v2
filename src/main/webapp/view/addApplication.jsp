@@ -62,7 +62,7 @@
 <body>
 <h1>Submit Job Application</h1>
 
-<form action="application" method="post" enctype="multipart/form-data">
+<form action="application?action=addApplication" method="post" enctype="multipart/form-data">
   <label for="candidateName">Full Name:</label>
   <input name="candidateName" type="text" id="candidateName" required>
 

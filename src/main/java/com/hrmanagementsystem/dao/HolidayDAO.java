@@ -1,11 +1,9 @@
 package com.hrmanagementsystem.dao;
 
 import com.hrmanagementsystem.entity.Holiday;
+import com.hrmanagementsystem.entity.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 public class HolidayDAO {

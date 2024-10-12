@@ -98,7 +98,9 @@
             <th>Total Salary</th>
             <th>Situation</th>
             <th>Department</th>
-            <th>Actions</th>
+            <c:if test="${user.role == 'Admin'}">
+                <th>Actions</th>
+            </c:if>
         </tr>
         </thead>
         <tbody>
@@ -117,10 +119,12 @@
                 <td>${employee.totalSalary}</td>
                 <td>${employee.situation}</td>
                 <td>${employee.department}</td>
+                <c:if test="${user.role == 'Admin'}">
                 <td>
                     <a href="employee?action=editEmployee&id=${employee.id}" class="btn-edit">Edit</a>
                     <a href="employee?action=deleteEmployee&id=${employee.id}" class="btn-delete" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
                 </td>
+                </c:if>
             </tr>
         </c:forEach>
         </tbody>

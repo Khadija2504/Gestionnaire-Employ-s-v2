@@ -2,14 +2,11 @@ package com.hrmanagementsystem.controller;
 
 import com.hrmanagementsystem.dao.UserDAO;
 import com.hrmanagementsystem.entity.User;
-import com.hrmanagementsystem.security.CustomCallbackHandler;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -54,6 +51,8 @@ public class LoginServlet extends HttpServlet {
 
                 if (passwordMatches) {
                     System.out.println("User logged in successfully");
+                    int userId = user.getId();
+                    request.getSession().setAttribute("loggedInUserId", userId);
                     HttpSession session = request.getSession();
                     session.setAttribute("user", user);
                     System.out.println("User role: " + user.getRole());
@@ -65,20 +64,29 @@ public class LoginServlet extends HttpServlet {
                         case RH:
                             response.sendRedirect(request.getContextPath() + "/jobOffer?action=jobOfferList");
                             break;
-                        case Recruiter:
-                            response.sendRedirect(request.getContextPath() + "/jobOffer?action=jobOfferList");
-                        case Employee:
-                            response.sendRedirect(request.getContextPath() + "/employee?action=employeeList");
+                        case Recruiter, Employee:
+                            response.sendRedirect(request.getContextPath() + "/jobOffer?action=JobOfferList");
                             break;
+                        default:
+                            System.out.println("Unknown role: " + user.getRole());
+                            request.setAttribute("errorMessage", "Invalid user role");
+                            request.getRequestDispatcher("view/login.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("error", "Invalid email or password");
-                    request.getRequestDispatcher("login").forward(request, response);
+                    System.out.println("Password does not match");
+                    request.setAttribute("errorMessage", "Invalid email or password");
+                    request.getRequestDispatcher("view/login.jsp").forward(request, response);
                 }
             } else {
-                request.setAttribute("error", "Invalid email or password");
-                request.getRequestDispatcher("login").forward(request, response);
+                System.out.println("User not found");
+                request.setAttribute("errorMessage", "Invalid email or password");
+                request.getRequestDispatcher("view/login.jsp").forward(request, response);
             }
+        } catch (Exception e) {
+            System.out.println("Exception during login: " + e.getMessage());
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred during login");
+            request.getRequestDispatcher("view/login.jsp").forward(request, response);
         } finally {
             em.close();
         }

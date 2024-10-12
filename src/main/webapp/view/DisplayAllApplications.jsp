@@ -1,3 +1,4 @@
+<%@ page import="com.hrmanagementsystem.enums.ApplicationStatus" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -33,7 +34,19 @@
 <body>
 <%@ include file="navbar.jsp" %>
 <h1>All Applications</h1>
+<form action="${pageContext.request.contextPath}/application?action=filterApplications" method="post">
+  <input type="hidden" name="jobOfferId" value="${param.jobOfferId}">
 
+  <label for="status">Filter by status:</label>
+  <select name="status" id="status">
+    <option value="">All Statuses</option>
+    <c:forEach var="status" items="<%= ApplicationStatus.values() %>">
+      <option value="${status}">${status}</option>
+    </c:forEach>
+  </select>
+
+  <input type="submit" value="Filter">
+</form>
 <c:choose>
   <c:when test="${not empty applications}">
     <table>
@@ -44,7 +57,11 @@
         <th>Phone Number</th>
         <th>Applied Date</th>
         <th>Job Title</th>
+        <th>Status</th>
         <th>Resume</th>
+        <c:if test="${user.role == 'Recruiter'}">
+          <th>Update status</th>
+        </c:if>
       </tr>
       </thead>
       <tbody>
@@ -55,6 +72,7 @@
           <td>${app.candidatePhone}</td>
           <td>${app.appliedDate}</td>
           <td>${app.jobOffer.title}</td>
+          <td>${app.status}</td>
           <td>
             <c:choose>
               <c:when test="${not empty app.resume}">
@@ -67,6 +85,18 @@
               </c:otherwise>
             </c:choose>
           </td>
+            <c:if test="${user.role == 'Recruiter'}">
+          <td>
+            <form action="application?action=updateApplicationStatus&applicationId=${app.id}&jobOfferId=${app.jobOffer.id}" method="post">
+              <input type="hidden" name="status" value="<%= ApplicationStatus.Accepted%>" required>
+              <button type="submit">Accept it</button>
+            </form>
+            <form action="application?action=updateApplicationStatus&applicationId=${app.id}&jobOfferId=${app.jobOffer.id}" method="post">
+              <input type="hidden" name="status" value="<%= ApplicationStatus.Refused%>" required>
+              <button type="submit">Refuse it</button>
+            </form>
+          </td>
+          </c:if>
         </tr>
       </c:forEach>
       </tbody>

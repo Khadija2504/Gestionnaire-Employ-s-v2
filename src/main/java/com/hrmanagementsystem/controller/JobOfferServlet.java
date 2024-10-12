@@ -49,7 +49,7 @@ public class JobOfferServlet extends HttpServlet {
         LocalDateTime publishedDate = LocalDateTime.now();
         JobOffer jobOffer = new JobOffer(title, description, publishedDate);
         JobOfferDAO.save(jobOffer);
-        resp.sendRedirect("addJobOfferForm?action=addJobOfferForm");
+        resp.sendRedirect("jobOffer?action=addJobOfferForm");
     }
 
     protected void deleteJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

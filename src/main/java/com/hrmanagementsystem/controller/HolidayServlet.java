@@ -1,17 +1,15 @@
 package com.hrmanagementsystem.controller;
 
 import com.hrmanagementsystem.dao.EmployeeDAO;
-import com.hrmanagementsystem.dao.HolidayDAO;
 import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.HolidayStatus;
+import com.hrmanagementsystem.service.HolidayService;
+import com.hrmanagementsystem.service.implementation.HolidayServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,6 +29,9 @@ public class HolidayServlet extends HttpServlet {
         switch (action) {
             case "addHoliday":
                 addHoliday(req, resp);
+                break;
+            case "updateHoliday":
+                updateHoliday(req, resp);
                 break;
         }
     }
@@ -79,17 +80,14 @@ public class HolidayServlet extends HttpServlet {
         String filePath = uploadFilePath + File.separator + fileName;
         filePart.write(filePath);
 
-        int employeeId = Integer.parseInt(req.getParameter("employeeId"));
-
-        User employee = EmployeeDAO.getById(employeeId);
+        Integer loggedInUserId = (Integer) req.getSession().getAttribute("loggedInUserId");
+        User employee = EmployeeDAO.getById(loggedInUserId);
 
         if (employee == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid employee ID");
             return;
         }
-
-        Holiday holiday = new Holiday(startDate, endDate, reason, filePath, HolidayStatus.Pending, employee);
-        HolidayDAO.save(holiday);
+        HolidayService.addHoliday(startDate, endDate, reason, filePath, employee);
         resp.sendRedirect("holidays?action=getAllHolidays");
     }
     private String extractFileName(Part part) {
@@ -108,18 +106,18 @@ public class HolidayServlet extends HttpServlet {
     }
 
     private void getAllHolidays(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Holiday> holidays = HolidayDAO.getAllHolidays();
+        List<Holiday> holidays = HolidayService.getAllHolidays();
         req.setAttribute("holidays", holidays);
         req.getRequestDispatcher("view/displayAllHolidays.jsp").forward(req, resp);
     }
     private void editHoliday(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
-        Holiday holiday = HolidayDAO.getById(id);
+        Holiday holiday = HolidayService.getById(id);
     }
 
     public void downloadJustification(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int holidayId = Integer.parseInt(req.getParameter("holidayId"));
-        Holiday holiday = HolidayDAO.getById(holidayId);
+        Holiday holiday = HolidayService.getById(holidayId);
 
         if (holiday != null && holiday.getJustification() != null) {
             File downloadFile = new File(holiday.getJustification());
@@ -144,6 +142,18 @@ public class HolidayServlet extends HttpServlet {
             }
         } else {
             resp.getWriter().print("holiday or justification not found!");
+        }
+    }
+
+    private void updateHoliday(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int holidayId = Integer.parseInt(req.getParameter("holidayId"));
+        String newStatus = req.getParameter("status");
+
+        try {
+            HolidayService.update(holidayId, newStatus);
+            resp.sendRedirect("holidays?action=getAllHolidays");
+        } catch (IllegalArgumentException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
         }
     }
 }

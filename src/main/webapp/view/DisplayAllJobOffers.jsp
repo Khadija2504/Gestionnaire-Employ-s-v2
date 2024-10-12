@@ -27,7 +27,6 @@
 <table>
     <thead>
     <tr>
-        <th>ID</th>
         <th>Title</th>
         <th>Description</th>
         <th>Published Date</th>
@@ -37,14 +36,16 @@
     <tbody>
     <c:forEach var="jobOffer" items="${jobOffers}">
         <tr>
-            <td>${jobOffer.id}</td>
             <td>${jobOffer.title}</td>
             <td>${jobOffer.description}</td>
             <td>${jobOffer.publishedDate}</td>
             <td>
-                <a href="application?action=deleteJobOffer&id=${jobOffer.id}" onclick="return confirm('Are you sure you want to delete this job offer?')">Delete</a>
-                <a href="application?action=addApplicationForm&jobOfferId=${jobOffer.id}">Apply</a>
-                <a href="application?action=getAllApplications&jobOfferId=${jobOffer.id}">All applications</a>
+                <c:if test="${user.role == 'Employee'}">
+                    <a href="application?action=addApplicationForm&jobOfferId=${jobOffer.id}">Apply</a>
+                </c:if>
+                <c:if test="${user.role == 'Recruiter'}">
+                    <a href="application?action=getAllApplications&jobOfferId=${jobOffer.id}">All applications</a>
+                </c:if>
             </td>
         </tr>
     </c:forEach>

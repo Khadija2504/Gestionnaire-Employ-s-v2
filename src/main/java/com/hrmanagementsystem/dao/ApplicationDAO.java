@@ -1,6 +1,8 @@
 package com.hrmanagementsystem.dao;
 
 import com.hrmanagementsystem.entity.Application;
+import com.hrmanagementsystem.entity.Holiday;
+import com.hrmanagementsystem.enums.ApplicationStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -47,4 +49,34 @@ public class ApplicationDAO {
             em.close();
         }
     }
+
+    public static List<Application> getFilteredApplications(int jobOfferId, ApplicationStatus status) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Application> query = em.createQuery(
+                    "SELECT a FROM Application a WHERE a.jobOffer.id = :jobOfferId AND a.status = :status",
+                    Application.class
+            );
+            query.setParameter("jobOfferId", jobOfferId);
+            query.setParameter("status", status);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public static void updateStatus(Application application) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.merge(application);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
 }

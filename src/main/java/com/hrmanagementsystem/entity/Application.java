@@ -1,5 +1,7 @@
 package com.hrmanagementsystem.entity;
 
+import com.hrmanagementsystem.enums.ApplicationStatus;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,15 +23,19 @@ public class Application {
     @JoinColumn(name = "job_offer_id", nullable = false)
     private JobOffer jobOffer;
 
+    @Enumerated(EnumType.STRING)
+    ApplicationStatus status;
+
     public Application() {}
 
-    public Application(String candidateName, String candidateEmail, String resume, LocalDateTime appliedDate, String candidatePhone, JobOffer jobOffer) {
+    public Application(String candidateName, String candidateEmail, String resume, LocalDateTime appliedDate, String candidatePhone, JobOffer jobOffer, ApplicationStatus status) {
         this.candidateName = candidateName;
         this.candidateEmail = candidateEmail;
         this.resume = resume;
         this.appliedDate = appliedDate;
         this.candidatePhone = candidatePhone;
         this.jobOffer = jobOffer;
+        this.status = status;
     }
 
     public int getId() {
@@ -82,6 +88,13 @@ public class Application {
 
     public void setJobOffer(JobOffer jobOffer) {
         this.jobOffer = jobOffer;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
     }
 }
 
