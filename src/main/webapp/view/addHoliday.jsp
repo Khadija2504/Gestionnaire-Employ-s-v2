@@ -52,12 +52,22 @@
         button:hover {
             background-color: #45a049;
         }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <%@ include file="navbar.jsp" %>
 <div class="container">
     <h1>Add Holiday Request</h1>
+    <% if(request.getAttribute("errorMessage") != null) { %>
+    <div class="error-message">
+        <%= request.getAttribute("errorMessage") %>
+    </div>
+    <% } %>
     <form action="holidays?action=addHoliday" method="post" enctype="multipart/form-data">
         <label for="startDate">Start Date:</label>
         <input name="startDate" type="date" id="startDate" required>

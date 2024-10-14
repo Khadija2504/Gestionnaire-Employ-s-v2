@@ -84,9 +84,37 @@ public class HolidayServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid employee ID");
             return;
         }
+
+        int requestedDays = calculateDaysBetween(startDate, endDate) + 1;
+
+        List<Holiday> acceptedHolidays = HolidayService.getAcceptedHolidaysForEmployee(employee);
+
+        int takenDays = calculateTotalDays(acceptedHolidays);
+
+        if (takenDays + requestedDays > 30) {
+            String errorMessage = "Total holidays cannot exceed one month (30 days). " +
+                    "Days already taken: " + takenDays + ", Requested: " + requestedDays +
+                    ", Available: " + (30 - takenDays);
+            req.setAttribute("errorMessage", errorMessage);
+            req.getRequestDispatcher("view/addHoliday.jsp").forward(req, resp);
+            return;
+        }
+
         HolidayService.addHoliday(startDate, endDate, reason, filePath, employee);
         resp.sendRedirect("holidays?action=getAllHolidays");
     }
+
+    private int calculateDaysBetween(Date startDate, Date endDate) {
+        long diff = endDate.getTime() - startDate.getTime();
+        return (int) (diff / (24 * 60 * 60 * 1000));
+    }
+
+    private int calculateTotalDays(List<Holiday> holidays) {
+        return holidays.stream()
+                .mapToInt(holiday -> calculateDaysBetween(holiday.getStartDate(), holiday.getEndDate()) + 1)
+                .sum();
+    }
+
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         String[] tokens = contentDisp.split(";");

@@ -22,6 +22,7 @@ public class JobOfferDAO {
     }
 
     public static void save(JobOffer jobOffer) {
+        System.out.println("Saving JobOffer: " + jobOffer);
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();

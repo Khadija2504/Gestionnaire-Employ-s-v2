@@ -40,7 +40,10 @@ public class EmployeeDAO {
             query.setParameter("email", user.getEmail());
             boolean emailExists = query.getSingleResult() > 0;
 
-            if (emailExists) {
+            TypedQuery<Long> query1 = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.nssu = :nssu", Long.class);
+            query1.setParameter("nssu", user.getNssu());
+            boolean nssuExists = query1.getSingleResult() > 0;
+            if (emailExists || nssuExists) {
                 tx.rollback();
                 return false;
             }
@@ -122,6 +125,15 @@ public class EmployeeDAO {
             return query.getResultList();
         } finally {
             em.close();
+        }
+    }
+    public static User findByNssu(String nssu) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            return em.createQuery("SELECT u FROM User u WHERE u.nssu = :nssu", User.class)
+                    .setParameter("nssu", nssu).getSingleResult();
+        }catch (NoResultException e) {
+            return null;
         }
     }
 }

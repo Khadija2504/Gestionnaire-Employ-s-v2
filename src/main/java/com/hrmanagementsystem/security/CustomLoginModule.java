@@ -61,7 +61,6 @@ public class CustomLoginModule implements LoginModule {
             throw new LoginException("Error: " + uce.getCallback().toString() + " not available");
         }
 
-        // Verify the username/password
         boolean usernameCorrect = false;
         boolean passwordCorrect = false;
 

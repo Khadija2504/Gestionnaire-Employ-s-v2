@@ -14,6 +14,10 @@ public interface HolidayService {
         HolidayDAO.save(holiday);
     }
 
+    static List<Holiday> getAcceptedHolidaysForEmployee(User employee) {
+        return HolidayDAO.getAcceptedHolidaysForEmployee(employee);
+    }
+
     static List<Holiday> getAllHolidays() {
         return HolidayDAO.getAllHolidays();
     }

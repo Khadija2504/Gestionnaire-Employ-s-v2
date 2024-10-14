@@ -49,7 +49,7 @@
             <li><a href="${pageContext.request.contextPath}/employee?action=addEmployeeForm">Add employee</a></li>
             <li><a href="${pageContext.request.contextPath}/employee?action=employeeList">Employees list</a></li>
             <li><a href="${pageContext.request.contextPath}/holidays?action=getAllHolidays">Holidays list</a></li>
-        </c:if> 
+        </c:if>
         <c:if test="${user.role == 'Employee'}">
             <li><a href="${pageContext.request.contextPath}/holidays?action=addHolidayForm">Add a holiday request</a></li>
             <li><a href="${pageContext.request.contextPath}/holidays?action=getAllHolidays">Holidays list</a></li>

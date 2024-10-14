@@ -30,8 +30,10 @@ public class JobOfferServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        scheduler.shutdownNow();
         super.destroy();
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
     }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -63,24 +65,25 @@ public class JobOfferServlet extends HttpServlet {
         req.getRequestDispatcher("view/addJobOffer.jsp").forward(req, resp);
     }
 
-    private void addJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String title = req.getParameter("title");
-        String description = req.getParameter("description");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        LocalDate expiredDate = LocalDate.parse(req.getParameter("expiredDate"), formatter);
-
-        LocalDateTime expiredDateTime = expiredDate.atTime(23, 59, 59);
-
-        LocalDateTime publishedDate = LocalDateTime.now();
-        JobOffer jobOffer = new JobOffer(title, description, publishedDate, expiredDate.atStartOfDay(), JobOfferStatus.Open);
+    protected void addJobOffer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String expiredDateStr = request.getParameter("expiredDate");
+        System.out.println(title + " " + description);
+        JobOffer jobOffer = new JobOffer(title,description, LocalDateTime.now(), LocalDate.parse(expiredDateStr).atStartOfDay(), JobOfferStatus.Open);
+        System.out.println("job offer details:" + jobOffer);
         JobOfferDAO.save(jobOffer);
-        long delay = ChronoUnit.SECONDS.between(LocalDateTime.now(), expiredDateTime);
-        scheduler.schedule(() -> updateJobOfferStatus(jobOffer.getId()), delay, TimeUnit.SECONDS);
-        resp.sendRedirect("jobOffer?action=addJobOfferForm");
+
+        long delayInSeconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), jobOffer.getExpiredDate());
+        scheduler.schedule(() -> {
+            jobOffer.setStatus(JobOfferStatus.Expired);
+            JobOfferDAO.update(jobOffer);
+        }, delayInSeconds, TimeUnit.SECONDS);
+
+        response.sendRedirect("jobOffer?action=addJobOfferForm");
     }
 
-    protected void deleteJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void deleteJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         JobOfferDAO.delete(id);
         resp.sendRedirect("JobOfferList?action=jobOfferList");

@@ -1,6 +1,7 @@
 package com.hrmanagementsystem.controller;
 
 import com.hrmanagementsystem.dao.EmployeeDAO;
+import com.hrmanagementsystem.dao.UserDAO;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
 import org.mindrot.jbcrypt.BCrypt;
@@ -102,7 +103,7 @@ public class UserServlet extends HttpServlet {
             response.sendRedirect("employee?action=employeeList");
         } else {
             HttpSession session = request.getSession();
-            session.setAttribute("errorMessage", "Failed to add employee. Email may already exist.");
+            session.setAttribute("errorMessage", "Failed to add employee. Email or nsssu may already exist.");
             response.sendRedirect("employee?action=addEmployeeForm");
         }
     }
