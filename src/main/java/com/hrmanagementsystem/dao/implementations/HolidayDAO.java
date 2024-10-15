@@ -1,5 +1,6 @@
-package com.hrmanagementsystem.dao;
+package com.hrmanagementsystem.dao.implementations;
 
+import com.hrmanagementsystem.dao.interfaces.HolidayInterface;
 import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.HolidayStatus;
@@ -12,10 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HolidayDAO {
+public class HolidayDAO implements HolidayInterface {
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
 
-    public static Holiday getById(int id) {
+    @Override
+    public Holiday getById(int id) {
         EntityManager em = emf.createEntityManager();
         try{
             return em.find(Holiday.class, id);
@@ -24,7 +26,8 @@ public class HolidayDAO {
         }
     }
 
-    public static List<Holiday> getAcceptedHolidaysForEmployee(User employee) {
+    @Override
+    public List<Holiday> getAcceptedHolidaysForEmployee(User employee) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Holiday> query = em.createQuery(
@@ -38,7 +41,8 @@ public class HolidayDAO {
         }
     }
 
-    public static Map<String, Map<String, Object>> getMonthlyAbsenceReport(int year, int month) {
+    @Override
+    public Map<String, Map<String, Object>> getMonthlyAbsenceReport(int year, int month) {
         EntityManager em = emf.createEntityManager();
         try {
             LocalDate startOfMonth = LocalDate.of(year, month, 1);
@@ -71,7 +75,8 @@ public class HolidayDAO {
         }
     }
 
-    public static void save(Holiday holiday) {
+    @Override
+    public void save(Holiday holiday) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
@@ -85,7 +90,8 @@ public class HolidayDAO {
         }
     }
 
-    public static List<Holiday> getAllHolidays() {
+    @Override
+    public List<Holiday> getAllHolidays() {
         EntityManager em = emf.createEntityManager();
         try{
             TypedQuery<Holiday> query = em.createQuery("FROM Holiday", Holiday.class);
@@ -95,7 +101,8 @@ public class HolidayDAO {
         }
     }
 
-    public static void update(Holiday holiday) {
+    @Override
+    public void update(Holiday holiday) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();

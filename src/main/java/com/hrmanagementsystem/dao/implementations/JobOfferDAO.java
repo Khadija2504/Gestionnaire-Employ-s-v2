@@ -1,5 +1,6 @@
-package com.hrmanagementsystem.dao;
+package com.hrmanagementsystem.dao.implementations;
 
+import com.hrmanagementsystem.dao.interfaces.JobOfferInterface;
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.enums.JobOfferStatus;
 
@@ -9,10 +10,10 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-public class JobOfferDAO {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
+public class JobOfferDAO implements JobOfferInterface {
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
 
-    public static JobOffer getById(int id) {
+    public JobOffer getById(int id) {
         EntityManager em = emf.createEntityManager();
         try{
             return em.find(JobOffer.class, id);
@@ -21,7 +22,7 @@ public class JobOfferDAO {
         }
     }
 
-    public static void save(JobOffer jobOffer) {
+    public void save(JobOffer jobOffer) {
         System.out.println("Saving JobOffer: " + jobOffer);
         EntityManager em = emf.createEntityManager();
         try{
@@ -36,7 +37,7 @@ public class JobOfferDAO {
         }
     }
 
-    public static void update(JobOffer jobOffer) {
+    public void update(JobOffer jobOffer) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
@@ -50,7 +51,7 @@ public class JobOfferDAO {
         }
     }
 
-    public static void delete(int id) {
+    public void delete(int id) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
@@ -67,7 +68,7 @@ public class JobOfferDAO {
         }
     }
 
-    public static List<JobOffer> getAll() {
+    public List<JobOffer> getAll() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<JobOffer> query = em.createQuery("SELECT jo FROM JobOffer jo", JobOffer.class);
@@ -76,7 +77,7 @@ public class JobOfferDAO {
             em.close();
         }
     }
-    public static List<JobOffer> getByStatus(JobOfferStatus status) {
+    public List<JobOffer> getByStatus(JobOfferStatus status) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<JobOffer> query = em.createQuery("FROM JobOffer WHERE status = :status", JobOffer.class);

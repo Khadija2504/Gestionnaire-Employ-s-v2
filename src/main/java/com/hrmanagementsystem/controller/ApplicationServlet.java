@@ -1,15 +1,12 @@
 package com.hrmanagementsystem.controller;
 
-import com.hrmanagementsystem.dao.ApplicationDAO;
-import com.hrmanagementsystem.dao.HolidayDAO;
-import com.hrmanagementsystem.dao.JobOfferDAO;
-import com.hrmanagementsystem.dao.NotificationDAO;
+import com.hrmanagementsystem.dao.implementations.ApplicationDAO;
+import com.hrmanagementsystem.dao.implementations.JobOfferDAO;
+import com.hrmanagementsystem.dao.implementations.NotificationDAO;
 import com.hrmanagementsystem.entity.Application;
-import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.entity.Notification;
 import com.hrmanagementsystem.enums.ApplicationStatus;
-import com.hrmanagementsystem.enums.HolidayStatus;
 import com.hrmanagementsystem.util.EmailSender;
 
 import javax.servlet.annotation.MultipartConfig;
@@ -53,29 +50,29 @@ public class ApplicationServlet extends HttpServlet {
         String phoneNumber = req.getParameter("phoneNumber");
         LocalDateTime appliedDate = LocalDateTime.now();
         String applicationPath = req.getServletContext().getRealPath("");
-        String uploadFilePath = applicationPath + File.separator + UPLOAD_DIR;
-
-        File uploadDir = new File(uploadFilePath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdir();
-        }
-
-        Part filePart = req.getPart("resume");
-        String fileName = extractFileName(filePart);
-
-        String filePath = uploadFilePath + File.separator + fileName;
-        filePart.write(filePath);
-
         int jobOfferId = Integer.parseInt(req.getParameter("jobOfferId"));
+        String uploadFilePath = applicationPath + File.separator + UPLOAD_DIR;
+        Part filePart = req.getPart("resume");
 
-        JobOffer jobOffer = JobOfferDAO.getById(jobOfferId);
-
-        if (jobOffer == null) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Job Offer ID");
-            return;
-        }
-        Application application = new Application(title, description, filePath, appliedDate, phoneNumber, jobOffer, ApplicationStatus.Pending);
-        ApplicationDAO.save(application);
+//        File uploadDir = new File(uploadFilePath);
+//        if (!uploadDir.exists()) {
+//            uploadDir.mkdir();
+//        }
+//
+//        String fileName = extractFileName(filePart);
+//
+//        String filePath = uploadFilePath + File.separator + fileName;
+//        filePart.write(filePath);
+//
+//
+//        JobOffer jobOffer = JobOfferDAO.getById(jobOfferId);
+//
+//        if (jobOffer == null) {
+//            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Job Offer ID");
+//            return;
+//        }
+//        Application application = new Application(title, description, filePath, appliedDate, phoneNumber, jobOffer, ApplicationStatus.Pending);
+//        ApplicationDAO.save(application);
         resp.sendRedirect("jobOffer?action=JobOfferList");
     }
 

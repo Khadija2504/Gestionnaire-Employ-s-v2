@@ -1,7 +1,7 @@
-package com.hrmanagementsystem.dao;
+package com.hrmanagementsystem.dao.implementations;
 
+import com.hrmanagementsystem.dao.interfaces.ApplicationInterface;
 import com.hrmanagementsystem.entity.Application;
-import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.enums.ApplicationStatus;
 
 import javax.persistence.EntityManager;
@@ -10,10 +10,11 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-public class ApplicationDAO {
+public class ApplicationDAO implements ApplicationInterface {
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
 
-    public static Application getbyId(int id) {
+    @Override
+    public Application getById(int id) {
         EntityManager em = emf.createEntityManager();
         try{
             return em.find(Application.class,id);
@@ -22,7 +23,8 @@ public class ApplicationDAO {
         }
     }
 
-    public static void save(Application application) {
+    @Override
+    public void save(Application application) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
@@ -36,7 +38,8 @@ public class ApplicationDAO {
         }
     }
 
-    public static List<Application> getAllByJobOfferId(int jobOfferId) {
+    @Override
+    public List<Application> getAllByJobOfferId(int jobOfferId) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Application> query = em.createQuery(
@@ -50,7 +53,8 @@ public class ApplicationDAO {
         }
     }
 
-    public static List<Application> getFilteredApplications(int jobOfferId, ApplicationStatus status) {
+    @Override
+    public List<Application> getFilteredApplications(int jobOfferId, ApplicationStatus status) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Application> query = em.createQuery(
@@ -65,7 +69,8 @@ public class ApplicationDAO {
         }
     }
 
-    public static void updateStatus(Application application) {
+    @Override
+    public void updateStatus(Application application) {
         EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();

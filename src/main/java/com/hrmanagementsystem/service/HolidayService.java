@@ -1,6 +1,7 @@
 package com.hrmanagementsystem.service;
 
-import com.hrmanagementsystem.dao.HolidayDAO;
+import com.hrmanagementsystem.dao.implementations.HolidayDAO;
+import com.hrmanagementsystem.dao.interfaces.HolidayInterface;
 import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.HolidayStatus;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface HolidayService {
+    HolidayDAO holidayDAO = new HolidayDAO();
+    HolidayInterface HolidayDAO = new HolidayDAO();
     static void addHoliday(Date startDate, Date endDate, String reason, String filePath, User employee) {
         Holiday holiday = new Holiday(startDate, endDate, reason, filePath, HolidayStatus.Pending, employee);
         HolidayDAO.save(holiday);

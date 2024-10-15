@@ -1,4 +1,4 @@
-package com.hrmanagementsystem.dao;
+package com.hrmanagementsystem.dao.implementations;
 
 import com.hrmanagementsystem.entity.Notification;
 

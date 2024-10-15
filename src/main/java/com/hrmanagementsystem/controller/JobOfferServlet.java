@@ -1,18 +1,15 @@
 package com.hrmanagementsystem.controller;
 
-import com.hrmanagementsystem.dao.JobOfferDAO;
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.enums.JobOfferStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.Executors;

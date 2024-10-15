@@ -1,7 +1,6 @@
 package com.hrmanagementsystem.util;
 
-import com.hrmanagementsystem.dao.EmployeeDAO;
-import com.hrmanagementsystem.dao.UserDAO;
+import com.hrmanagementsystem.dao.implementations.EmployeeDAO;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
 import org.mindrot.jbcrypt.BCrypt;

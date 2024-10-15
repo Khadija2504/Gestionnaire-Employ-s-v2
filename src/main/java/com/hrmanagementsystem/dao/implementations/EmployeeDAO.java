@@ -1,16 +1,18 @@
-package com.hrmanagementsystem.dao;
+package com.hrmanagementsystem.dao.implementations;
 
+import com.hrmanagementsystem.dao.interfaces.EmployeeInterface;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
 
 import javax.persistence.*;
 import java.util.List;
 
-public class EmployeeDAO {
+public class EmployeeDAO implements EmployeeInterface {
 
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
 
-    public static User getById(int id) {
+    @Override
+    public User getById(int id) {
         EntityManager em = emf.createEntityManager();
         try {
             return em.find(User.class, id);
@@ -19,7 +21,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static boolean getByEmail(String email) {
+    @Override
+    public boolean getByEmail(String email) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
@@ -30,7 +33,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static boolean save(User user) {
+    @Override
+    public boolean save(User user) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = null;
         try {
@@ -60,7 +64,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static void delete(int id) {
+    @Override
+    public void delete(int id) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -77,7 +82,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static boolean update(User user) {
+    @Override
+    public boolean update(User user) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = null;
         try {
@@ -104,7 +110,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static User getByUsername(String username) {
+    @Override
+    public User getByUsername(String username) {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery("SELECT u FROM User u WHERE u.firstName = :username", User.class)
@@ -117,7 +124,8 @@ public class EmployeeDAO {
         }
     }
 
-    public static List<User> getAll() {
+    @Override
+    public List<User> getAll() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.role = :role", User.class);
@@ -127,7 +135,9 @@ public class EmployeeDAO {
             em.close();
         }
     }
-    public static User findByNssu(String nssu) {
+
+    @Override
+    public User findByNssu(String nssu) {
         EntityManager em = emf.createEntityManager();
         try{
             return em.createQuery("SELECT u FROM User u WHERE u.nssu = :nssu", User.class)

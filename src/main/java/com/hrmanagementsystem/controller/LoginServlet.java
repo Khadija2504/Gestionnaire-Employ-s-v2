@@ -1,6 +1,6 @@
 package com.hrmanagementsystem.controller;
 
-import com.hrmanagementsystem.dao.UserDAO;
+import com.hrmanagementsystem.dao.implementations.UserDAO;
 import com.hrmanagementsystem.entity.User;
 import org.mindrot.jbcrypt.BCrypt;
 

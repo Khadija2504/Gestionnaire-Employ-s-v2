@@ -1,6 +1,5 @@
 package com.hrmanagementsystem.util;
 
-import com.hrmanagementsystem.dao.JobOfferDAO;
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.enums.JobOfferStatus;
 
