@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet {
                             response.sendRedirect(request.getContextPath() + "/employee?action=employeeList");
                             break;
                         case RH:
-                            response.sendRedirect(request.getContextPath() + "/jobOffer?action=jobOfferList");
+                            response.sendRedirect(request.getContextPath() + "/employee?action=generateFamilyAllowanceStats");
                             break;
                         case Recruiter, Employee:
                             response.sendRedirect(request.getContextPath() + "/jobOffer?action=JobOfferList");

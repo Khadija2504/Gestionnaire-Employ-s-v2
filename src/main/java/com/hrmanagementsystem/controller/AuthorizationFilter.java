@@ -62,9 +62,9 @@ public class AuthorizationFilter implements Filter {
             case Admin:
                 return requestURI.contains("employee") || requestURI.contains("holidays");
             case RH:
-                return requestURI.contains("jobOffer") || requestURI.contains("application");
+                return requestURI.contains("employee");
             case Employee:
-                return requestURI.contains("application") || requestURI.contains("jobOffer") || requestURI.contains("holidays");
+                return requestURI.contains("application") || requestURI.contains("jobOffer") || requestURI.contains("holidays") || requestURI.contains("employee");
             case Recruiter:
                 return requestURI.contains("jobOffer") || requestURI.contains("application") || requestURI.contains("addJobOfferForm");
             default:

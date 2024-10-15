@@ -11,10 +11,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @MultipartConfig
 public class HolidayServlet extends HttpServlet {
@@ -45,6 +50,9 @@ public class HolidayServlet extends HttpServlet {
                 break;
             case "downloadJustification":
                 downloadJustification(req, resp);
+                break;
+            case "generateMonthlyReport":
+                generateAbsenceReport(req, resp);
                 break;
         }
     }
@@ -102,6 +110,21 @@ public class HolidayServlet extends HttpServlet {
 
         HolidayService.addHoliday(startDate, endDate, reason, filePath, employee);
         resp.sendRedirect("holidays?action=getAllHolidays");
+    }
+
+    private void generateAbsenceReport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<User> employees = EmployeeDAO.getAll();
+        Map<User, List<Holiday>> employeeHolidays = new HashMap<>();
+
+        for (User employee : employees) {
+            List<Holiday> acceptedHolidays = HolidayService.getAcceptedHolidaysForEmployee(employee);
+            if (!acceptedHolidays.isEmpty()) {
+                employeeHolidays.put(employee, acceptedHolidays);
+            }
+        }
+
+        req.setAttribute("employeeHolidays", employeeHolidays);
+        req.getRequestDispatcher("/view/report.jsp").forward(req, resp);
     }
 
     private int calculateDaysBetween(Date startDate, Date endDate) {

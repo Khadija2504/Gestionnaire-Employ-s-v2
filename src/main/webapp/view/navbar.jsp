@@ -49,8 +49,10 @@
             <li><a href="${pageContext.request.contextPath}/employee?action=addEmployeeForm">Add employee</a></li>
             <li><a href="${pageContext.request.contextPath}/employee?action=employeeList">Employees list</a></li>
             <li><a href="${pageContext.request.contextPath}/holidays?action=getAllHolidays">Holidays list</a></li>
+            <li><a href="${pageContext.request.contextPath}/holidays?action=generateMonthlyReport">Absence report</a></li>
         </c:if>
         <c:if test="${user.role == 'Employee'}">
+            <li><a href="${pageContext.request.contextPath}/employee?action=employeeProfile">View profile</a></li>
             <li><a href="${pageContext.request.contextPath}/holidays?action=addHolidayForm">Add a holiday request</a></li>
             <li><a href="${pageContext.request.contextPath}/holidays?action=getAllHolidays">Holidays list</a></li>
             <li><a href="${pageContext.request.contextPath}/jobOffer?action=JobOfferList">Job offers list</a></li>
@@ -58,7 +60,9 @@
         <c:if test="${user.role == 'Recruiter'}">
             <li><a href="${pageContext.request.contextPath}/jobOffer?action=addJobOfferForm">Add job offer</a></li>
             <li><a href="${pageContext.request.contextPath}/jobOffer?action=JobOfferList">Job offers list</a></li>
-        </c:if>
+        </c:if><c:if test="${user.role == 'RH'}">
+        <li><a href="${pageContext.request.contextPath}/employee?action=generateFamilyAllowanceStats">Statistics</a></li>
+    </c:if>
     </ul>
 </nav>
 </body>

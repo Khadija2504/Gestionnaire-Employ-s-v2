@@ -15,8 +15,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/userServlet")
 public class UserServlet extends HttpServlet {
@@ -50,6 +53,12 @@ public class UserServlet extends HttpServlet {
             case "employeeList":
                 displayEmployeesList(request, response);
                 break;
+            case "employeeProfile":
+                profile(request, response);
+                break;
+            case "generateFamilyAllowanceStats":
+                generateFamilyAllowanceStats(request, response);
+                break;
         }
     }
 
@@ -62,6 +71,34 @@ public class UserServlet extends HttpServlet {
         User employee = EmployeeDAO.getById(id);
         request.setAttribute("employee", employee);
         request.getRequestDispatcher("view/editEmployee.jsp").forward(request, response);
+    }
+
+    private void generateFamilyAllowanceStats(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<User> employees = EmployeeDAO.getAll();
+        Map<String, Map<String, Double>> monthlyStats = new HashMap<>();
+        Map<Integer, Double> employeeStats = new HashMap<>();
+
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
+
+        for (User employee : employees) {
+            double totalAllowance = 0;
+            for (int month = 1; month <= 12; month++) {
+                double monthlyAllowance = calculateFamilyAllowanceReport(employee, employee.getSalary(), employee.getKidsNum());
+                totalAllowance += monthlyAllowance;
+
+                String monthKey = String.format("%04d-%02d", currentYear, month);
+                monthlyStats.computeIfAbsent(monthKey, k -> new HashMap<>())
+                        .merge("total", monthlyAllowance, Double::sum);
+                monthlyStats.get(monthKey).merge("count", 1.0, Double::sum);
+            }
+            employeeStats.put(employee.getId(), totalAllowance);
+        }
+
+        request.setAttribute("monthlyStats", monthlyStats);
+        request.setAttribute("employeeStats", employeeStats);
+        request.setAttribute("employees", employees);
+        request.getRequestDispatcher("view/Statistics.jsp").forward(request, response);
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
@@ -139,6 +176,35 @@ public class UserServlet extends HttpServlet {
         return totalAllowance;
     }
 
+    private double calculateFamilyAllowanceReport(User employee, int salary, int kidsNum) {
+        int allowancePerChild;
+        int maxChildren = Math.min(kidsNum, 6);
+        double baseAllowance = 100.0;
+        double allowance = baseAllowance * employee.getKidsNum();
+
+        if ("married".equalsIgnoreCase(employee.getSituation())) {
+            allowance += 50.0;
+        }
+        if (salary < 6000) {
+            allowancePerChild = 300;
+        } else if (salary > 8000) {
+            allowancePerChild = 200;
+        } else {
+            double factor = (salary - 6000.0) / 2000.0;
+            allowancePerChild = (int) (300 - (factor * 100));
+        }
+
+        int totalAllowance = 0;
+        for (int i = 0; i < maxChildren; i++) {
+            if (i < 3) {
+                totalAllowance += allowancePerChild;
+            } else {
+                totalAllowance += (salary < 6000) ? 150 : 110;
+            }
+        }
+
+        return allowance + totalAllowance;
+    }
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         String firstName = request.getParameter("firstName");
@@ -199,5 +265,21 @@ public class UserServlet extends HttpServlet {
         request.setAttribute("employees", employeeList);
         System.out.println(employeeList);
         request.getRequestDispatcher("view/DisplayAllEmployees.jsp").forward(request, response);
+    }
+
+    public void profile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Integer loggedInUserId = (Integer) request.getSession().getAttribute("loggedInUserId");
+        User employee = EmployeeDAO.getById(loggedInUserId);
+
+        int familyAllowance = calculateFamilyAllowance(employee.getSalary(), employee.getKidsNum());
+
+        Map<String, Object> familyAllowanceDetails = new HashMap<>();
+        familyAllowanceDetails.put("amount", familyAllowance);
+        familyAllowanceDetails.put("num_children", employee.getKidsNum());
+        familyAllowanceDetails.put("situation", employee.getSituation());
+
+        request.setAttribute("employee", employee);
+        request.setAttribute("familyAllowanceDetails", familyAllowanceDetails);
+        request.getRequestDispatcher("view/profile.jsp").forward(request, response);
     }
 }

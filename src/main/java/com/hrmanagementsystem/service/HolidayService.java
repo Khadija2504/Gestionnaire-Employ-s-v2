@@ -7,11 +7,16 @@ import com.hrmanagementsystem.enums.HolidayStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface HolidayService {
     static void addHoliday(Date startDate, Date endDate, String reason, String filePath, User employee) {
         Holiday holiday = new Holiday(startDate, endDate, reason, filePath, HolidayStatus.Pending, employee);
         HolidayDAO.save(holiday);
+    }
+
+    static Map<String, Map<String, Object>> generateMonthlyAbsenceReport(int year, int month) {
+        return HolidayDAO.getMonthlyAbsenceReport(year, month);
     }
 
     static List<Holiday> getAcceptedHolidaysForEmployee(User employee) {
