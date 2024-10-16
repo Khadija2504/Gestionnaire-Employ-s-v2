@@ -2,6 +2,7 @@ package com.hrmanagementsystem.dao.implementations;
 
 import com.hrmanagementsystem.dao.interfaces.ApplicationInterface;
 import com.hrmanagementsystem.entity.Application;
+import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.ApplicationStatus;
 
 import javax.persistence.EntityManager;
@@ -10,10 +11,10 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-public class ApplicationDAO implements ApplicationInterface {
+public class ApplicationDAO {
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("hr_management_pu");
 
-    @Override
+
     public Application getById(int id) {
         EntityManager em = emf.createEntityManager();
         try{
@@ -23,7 +24,6 @@ public class ApplicationDAO implements ApplicationInterface {
         }
     }
 
-    @Override
     public void save(Application application) {
         EntityManager em = emf.createEntityManager();
         try{
@@ -38,7 +38,7 @@ public class ApplicationDAO implements ApplicationInterface {
         }
     }
 
-    @Override
+
     public List<Application> getAllByJobOfferId(int jobOfferId) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -53,7 +53,7 @@ public class ApplicationDAO implements ApplicationInterface {
         }
     }
 
-    @Override
+
     public List<Application> getFilteredApplications(int jobOfferId, ApplicationStatus status) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -69,7 +69,6 @@ public class ApplicationDAO implements ApplicationInterface {
         }
     }
 
-    @Override
     public void updateStatus(Application application) {
         EntityManager em = emf.createEntityManager();
         try{

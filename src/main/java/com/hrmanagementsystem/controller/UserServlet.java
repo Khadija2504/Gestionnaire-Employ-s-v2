@@ -3,8 +3,7 @@ package com.hrmanagementsystem.controller;
 import com.hrmanagementsystem.dao.implementations.EmployeeDAO;
 import com.hrmanagementsystem.entity.User;
 import com.hrmanagementsystem.enums.Role;
-import org.mindrot.jbcrypt.BCrypt;
-import jakarta.servlet.annotation.WebServlet;
+import com.hrmanagementsystem.service.EmployeeService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,15 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/userServlet")
 public class UserServlet extends HttpServlet {
+    protected EmployeeService employeeService;
+    public UserServlet(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+    public UserServlet(){}
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -67,36 +67,18 @@ public class UserServlet extends HttpServlet {
 
     private void editEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        User employee = EmployeeDAO.getById(id);
+        User employee = employeeService.getById(id);
         request.setAttribute("employee", employee);
         request.getRequestDispatcher("view/editEmployee.jsp").forward(request, response);
     }
 
     private void generateFamilyAllowanceStats(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<User> employees = EmployeeDAO.getAll();
-        Map<String, Map<String, Double>> monthlyStats = new HashMap<>();
-        Map<Integer, Double> employeeStats = new HashMap<>();
+        Map<String, Object> stats = employeeService.generateFamilyAllowanceStats();
 
-        LocalDate currentDate = LocalDate.now();
-        int currentYear = currentDate.getYear();
+        request.setAttribute("monthlyStats", stats.get("monthlyStats"));
+        request.setAttribute("employeeStats", stats.get("employeeStats"));
+        request.setAttribute("employees", stats.get("employees"));
 
-        for (User employee : employees) {
-            double totalAllowance = 0;
-            for (int month = 1; month <= 12; month++) {
-                double monthlyAllowance = calculateFamilyAllowanceReport(employee, employee.getSalary(), employee.getKidsNum());
-                totalAllowance += monthlyAllowance;
-
-                String monthKey = String.format("%04d-%02d", currentYear, month);
-                monthlyStats.computeIfAbsent(monthKey, k -> new HashMap<>())
-                        .merge("total", monthlyAllowance, Double::sum);
-                monthlyStats.get(monthKey).merge("count", 1.0, Double::sum);
-            }
-            employeeStats.put(employee.getId(), totalAllowance);
-        }
-
-        request.setAttribute("monthlyStats", monthlyStats);
-        request.setAttribute("employeeStats", employeeStats);
-        request.setAttribute("employees", employees);
         request.getRequestDispatcher("view/Statistics.jsp").forward(request, response);
     }
 
@@ -115,95 +97,30 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
         String nssu = request.getParameter("nssu");
 
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date birthday = null;
-        Date hireDate = null;
         try {
-            birthday = dateFormat.parse(birthdayStr);
-            hireDate = dateFormat.parse(hireDateStr);
+            boolean added = employeeService.save(firstName, lastName, phoneNumber, salary, birthdayStr, hireDateStr,
+                    position, kidsNum, situation, department, email, password, nssu);
+
+            if (added) {
+                response.sendRedirect("employee?action=employeeList");
+            } else {
+                HttpSession session = request.getSession();
+                session.setAttribute("errorMessage", "Failed to add employee. Email or nsssu may already exist.");
+                response.sendRedirect("employee?action=addEmployeeForm");
+            }
         } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        int familyAllowance = calculateFamilyAllowance(salary, kidsNum);
-
-        int totalSalary = salary + familyAllowance;
-
-        User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
-                totalSalary, situation, department, email, hashedPassword, nssu, Role.Employee);
-
-        boolean added = EmployeeDAO.save(user);
-        if (added) {
-            response.sendRedirect("employee?action=employeeList");
-        } else {
             HttpSession session = request.getSession();
-            session.setAttribute("errorMessage", "Failed to add employee. Email or nsssu may already exist.");
+            session.setAttribute("errorMessage", "Invalid date format.");
             response.sendRedirect("employee?action=addEmployeeForm");
         }
     }
 
     protected void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        EmployeeDAO.delete(id);
+        employeeService.delete(id);
         response.sendRedirect("employee?action=employeeList");
     }
 
-    private int calculateFamilyAllowance(int salary, int kidsNum) {
-        int allowancePerChild;
-        int maxChildren = Math.min(kidsNum, 6);
-
-        if (salary < 6000) {
-            allowancePerChild = 300;
-        } else if (salary > 8000) {
-            allowancePerChild = 200;
-        } else {
-            double factor = (salary - 6000.0) / 2000.0;
-            allowancePerChild = (int) (300 - (factor * 100));
-        }
-
-        int totalAllowance = 0;
-        for (int i = 0; i < maxChildren; i++) {
-            if (i < 3) {
-                totalAllowance += allowancePerChild;
-            } else {
-                totalAllowance += (salary < 6000) ? 150 : 110;
-            }
-        }
-
-        return totalAllowance;
-    }
-
-    private double calculateFamilyAllowanceReport(User employee, int salary, int kidsNum) {
-        int allowancePerChild;
-        int maxChildren = Math.min(kidsNum, 6);
-        double baseAllowance = 100.0;
-        double allowance = baseAllowance * employee.getKidsNum();
-
-        if ("married".equalsIgnoreCase(employee.getSituation())) {
-            allowance += 50.0;
-        }
-        if (salary < 6000) {
-            allowancePerChild = 300;
-        } else if (salary > 8000) {
-            allowancePerChild = 200;
-        } else {
-            double factor = (salary - 6000.0) / 2000.0;
-            allowancePerChild = (int) (300 - (factor * 100));
-        }
-
-        int totalAllowance = 0;
-        for (int i = 0; i < maxChildren; i++) {
-            if (i < 3) {
-                totalAllowance += allowancePerChild;
-            } else {
-                totalAllowance += (salary < 6000) ? 150 : 110;
-            }
-        }
-
-        return allowance + totalAllowance;
-    }
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         String firstName = request.getParameter("firstName");
@@ -220,57 +137,41 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
         String nssu = request.getParameter("nssu");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date birthday = null;
-        Date hireDate = null;
         try {
-            birthday = dateFormat.parse(birthdayStr);
-            hireDate = dateFormat.parse(hireDateStr);
+            boolean updated = employeeService.update(id, firstName, lastName, phoneNumber, salary, birthdayStr, hireDateStr,
+                    position, kidsNum, situation, department, email, password, nssu);
+
+            if (updated) {
+                response.sendRedirect("employee?action=employeeList");
+            } else {
+                HttpSession session = request.getSession();
+                session.setAttribute("errorMessage", "Failed to update employee. Email may already exist.");
+                response.sendRedirect("employee?action=editEmployee&id=" + id);
+            }
         } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        int familyAllowance = calculateFamilyAllowance(salary, kidsNum);
-
-        int totalSalary = salary + familyAllowance;
-
-        User user = new User(firstName, lastName, phoneNumber, salary, birthday, hireDate, position, kidsNum,
-                totalSalary, situation, department, email, password, nssu, Role.Employee);
-        user.setId(id);
-        boolean updated = EmployeeDAO.update(user);
-        if (updated) {
-            response.sendRedirect("employee?action=employeeList");
-        } else {
             HttpSession session = request.getSession();
-            session.setAttribute("errorMessage", "Failed to update employee. Email may already exist.");
-            response.sendRedirect("employee?action=editEmployee&id="+id);
+            session.setAttribute("errorMessage", "Invalid date format.");
+            response.sendRedirect("employee?action=editEmployee&id=" + id);
         }
     }
 
-//    private void searchEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        List<User> employeeList = getAll();
-//        String searchQuery = request.getParameter("searchQuery");
-//        List<User> result =  employeeList.stream()
-//                .filter(employee -> (employee.getName().equalsIgnoreCase(searchQuery) ||
-//                        employee.getPoste().equalsIgnoreCase(searchQuery) ||
-//                        employee.getEmail().equalsIgnoreCase(searchQuery) ||
-//                        employee.getDepartment().equalsIgnoreCase(searchQuery)))
-//                .toList();
-//        request.setAttribute("employees", result);
-//        request.getRequestDispatcher("views/employeeList.jsp").forward(request, response);
-//    }
     private void displayEmployeesList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<User> employeeList = EmployeeDAO.getAll();
+        List<User> employeeList = employeeService.getAll();
         request.setAttribute("employees", employeeList);
         System.out.println(employeeList);
         request.getRequestDispatcher("view/DisplayAllEmployees.jsp").forward(request, response);
     }
 
-    public void profile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void profile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Integer loggedInUserId = (Integer) request.getSession().getAttribute("loggedInUserId");
-        User employee = EmployeeDAO.getById(loggedInUserId);
+        User employee = employeeService.getById(loggedInUserId);
 
-        int familyAllowance = calculateFamilyAllowance(employee.getSalary(), employee.getKidsNum());
+        if (employee == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Employee not found");
+            return;
+        }
+
+        int familyAllowance = employeeService.calculateFamilyAllowance(employee.getSalary(), employee.getKidsNum());
 
         Map<String, Object> familyAllowanceDetails = new HashMap<>();
         familyAllowanceDetails.put("amount", familyAllowance);

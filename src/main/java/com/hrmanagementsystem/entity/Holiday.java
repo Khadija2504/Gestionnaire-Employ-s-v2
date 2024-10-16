@@ -36,6 +36,14 @@ public class Holiday {
         this.employee = employee;
     }
 
+    public Holiday(Date startDate, Date endDate, String reason, String filePath, User employee) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reason = reason;
+        Justification = filePath;
+        this.employee = employee;
+    }
+
     public int getId() {
         return id;
     }

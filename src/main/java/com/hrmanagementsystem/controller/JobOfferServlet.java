@@ -1,23 +1,25 @@
 package com.hrmanagementsystem.controller;
 
 import com.hrmanagementsystem.entity.JobOffer;
-import com.hrmanagementsystem.enums.JobOfferStatus;
+import com.hrmanagementsystem.service.JobOfferService;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class JobOfferServlet extends HttpServlet {
     private ScheduledExecutorService scheduler;
+
+    JobOfferService jobOfferService;
+    public JobOfferServlet(JobOfferService jobOfferService) {
+        this.jobOfferService = jobOfferService;
+    }
+    public JobOfferServlet(){}
 
     @Override
     public void init() throws ServletException {
@@ -66,36 +68,43 @@ public class JobOfferServlet extends HttpServlet {
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String expiredDateStr = request.getParameter("expiredDate");
-        System.out.println(title + " " + description);
-        JobOffer jobOffer = new JobOffer(title,description, LocalDateTime.now(), LocalDate.parse(expiredDateStr).atStartOfDay(), JobOfferStatus.Open);
-        System.out.println("job offer details:" + jobOffer);
-        JobOfferDAO.save(jobOffer);
 
-        long delayInSeconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), jobOffer.getExpiredDate());
-        scheduler.schedule(() -> {
-            jobOffer.setStatus(JobOfferStatus.Expired);
-            JobOfferDAO.update(jobOffer);
-        }, delayInSeconds, TimeUnit.SECONDS);
-
-        response.sendRedirect("jobOffer?action=addJobOfferForm");
+        try {
+            JobOffer jobOffer = jobOfferService.addJobOffer(title, description, expiredDateStr);
+            System.out.println("Job offer added: " + jobOffer);
+            response.sendRedirect("jobOffer?action=addJobOfferForm");
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Error adding job offer: " + e.getMessage());
+            request.getRequestDispatcher("view/addJobOfferForm.jsp").forward(request, response);
+        }
     }
 
     public void deleteJobOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
-        JobOfferDAO.delete(id);
+        jobOfferService.delete(id);
         resp.sendRedirect("JobOfferList?action=jobOfferList");
     }
 
     private void JobOfferList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<JobOffer> jobOffers = JobOfferDAO.getAll();
+        List<JobOffer> jobOffers = jobOfferService.getAll();
         req.setAttribute("jobOffers", jobOffers);
         req.getRequestDispatcher("view/DisplayAllJobOffers.jsp").forward(req, resp);
     }
-    private void updateJobOfferStatus(int jobOfferId) {
-        JobOffer jobOffer = JobOfferDAO.getById(jobOfferId);
-        if (jobOffer != null && jobOffer.getStatus() == JobOfferStatus.Open) {
-            jobOffer.setStatus(JobOfferStatus.Expired);
-            JobOfferDAO.update(jobOffer);
+
+    private void handleUpdateJobOfferStatus(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String jobOfferIdStr = request.getParameter("jobOfferId");
+        if (jobOfferIdStr != null && !jobOfferIdStr.isEmpty()) {
+            try {
+                int jobOfferId = Integer.parseInt(jobOfferIdStr);
+                jobOfferService.updateJobOfferStatus(jobOfferId);
+                response.sendRedirect("jobOffer?action=listJobOffers");
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid job offer ID");
+                request.getRequestDispatcher("view/error.jsp").forward(request, response);
+            }
+        } else {
+            request.setAttribute("errorMessage", "Job offer ID is required");
+            request.getRequestDispatcher("view/error.jsp").forward(request, response);
         }
     }
 }

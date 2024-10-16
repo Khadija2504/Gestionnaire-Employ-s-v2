@@ -1,26 +1,27 @@
 package com.hrmanagementsystem.controller;
 
-import com.hrmanagementsystem.dao.implementations.EmployeeDAO;
 import com.hrmanagementsystem.entity.Holiday;
 import com.hrmanagementsystem.entity.User;
+import com.hrmanagementsystem.service.EmployeeService;
 import com.hrmanagementsystem.service.HolidayService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @MultipartConfig
 public class HolidayServlet extends HttpServlet {
-    private static final String UPLOAD_DIR = "uploads";
+    HolidayService holidayService;
+    EmployeeService employeeService;
+    public HolidayServlet (HolidayService holidayService, EmployeeService employeeService) {
+        this.holidayService = holidayService;
+        this.employeeService = employeeService;
+    }
+    public HolidayServlet () {
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,18 +59,9 @@ public class HolidayServlet extends HttpServlet {
         String startDateStr = req.getParameter("startDate");
         String endDateStr = req.getParameter("endDate");
         String reason = req.getParameter("reason");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = null;
-        Date endDate = null;
-        try {
-            startDate = dateFormat.parse(startDateStr);
-            endDate = dateFormat.parse(endDateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         String holidayPath = req.getServletContext().getRealPath("");
-        String uploadFilePath = holidayPath + File.separator + UPLOAD_DIR;
+        String uploadFilePath = holidayPath + File.separator + holidayService.UPLOAD_DIR;
 
         File uploadDir = new File(uploadFilePath);
         if (!uploadDir.exists()) {
@@ -77,73 +69,33 @@ public class HolidayServlet extends HttpServlet {
         }
 
         Part filePart = req.getPart("justification");
-        String fileName = extractFileName(filePart);
-
-        String filePath = uploadFilePath + File.separator + fileName;
-        filePart.write(filePath);
 
         Integer loggedInUserId = (Integer) req.getSession().getAttribute("loggedInUserId");
-        User employee = EmployeeDAO.getById(loggedInUserId);
+        User employee = employeeService.getById(loggedInUserId);
 
         if (employee == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid employee ID");
             return;
         }
 
-        int requestedDays = calculateDaysBetween(startDate, endDate) + 1;
-
-        List<Holiday> acceptedHolidays = HolidayService.getAcceptedHolidaysForEmployee(employee);
-
-        int takenDays = calculateTotalDays(acceptedHolidays);
-
-        if (takenDays + requestedDays > 30) {
-            String errorMessage = "Total holidays cannot exceed one month (30 days). " +
-                    "Days already taken: " + takenDays + ", Requested: " + requestedDays +
-                    ", Available: " + (30 - takenDays);
-            req.setAttribute("errorMessage", errorMessage);
+        try {
+            holidayService.addHoliday(startDateStr, endDateStr, reason, uploadFilePath, filePart, employee);
+            resp.sendRedirect("holidays?action=getAllHolidays");
+        } catch (ParseException e) {
+            req.setAttribute("errorMessage", "Invalid date format");
             req.getRequestDispatcher("view/addHoliday.jsp").forward(req, resp);
-            return;
+        } catch (IllegalArgumentException e) {
+            req.setAttribute("errorMessage", e.getMessage());
+            req.getRequestDispatcher("view/addHoliday.jsp").forward(req, resp);
         }
-
-        HolidayService.addHoliday(startDate, endDate, reason, filePath, employee);
-        resp.sendRedirect("holidays?action=getAllHolidays");
     }
 
     private void generateAbsenceReport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<User> employees = EmployeeDAO.getAll();
-        Map<User, List<Holiday>> employeeHolidays = new HashMap<>();
-
-        for (User employee : employees) {
-            List<Holiday> acceptedHolidays = HolidayService.getAcceptedHolidaysForEmployee(employee);
-            if (!acceptedHolidays.isEmpty()) {
-                employeeHolidays.put(employee, acceptedHolidays);
-            }
-        }
+        List<User> employees = employeeService.getAll();
+        Map<User, List<Holiday>> employeeHolidays = holidayService.generateAbsenceReport(employees);
 
         req.setAttribute("employeeHolidays", employeeHolidays);
         req.getRequestDispatcher("/view/report.jsp").forward(req, resp);
-    }
-
-    private int calculateDaysBetween(Date startDate, Date endDate) {
-        long diff = endDate.getTime() - startDate.getTime();
-        return (int) (diff / (24 * 60 * 60 * 1000));
-    }
-
-    private int calculateTotalDays(List<Holiday> holidays) {
-        return holidays.stream()
-                .mapToInt(holiday -> calculateDaysBetween(holiday.getStartDate(), holiday.getEndDate()) + 1)
-                .sum();
-    }
-
-    private String extractFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        String[] tokens = contentDisp.split(";");
-        for (String token : tokens) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf("=") + 2, token.length() - 1);
-            }
-        }
-        return "";
     }
 
     private void addHolidayForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -151,42 +103,43 @@ public class HolidayServlet extends HttpServlet {
     }
 
     private void getAllHolidays(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Holiday> holidays = HolidayService.getAllHolidays();
+        List<Holiday> holidays = holidayService.getAllHolidays();
         req.setAttribute("holidays", holidays);
         req.getRequestDispatcher("view/displayAllHolidays.jsp").forward(req, resp);
     }
     private void editHoliday(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
-        Holiday holiday = HolidayService.getById(id);
+        Holiday holiday = holidayService.getById(id);
     }
 
     public void downloadJustification(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int holidayId = Integer.parseInt(req.getParameter("holidayId"));
-        Holiday holiday = HolidayService.getById(holidayId);
+        try {
+            int holidayId = Integer.parseInt(req.getParameter("holidayId"));
+            Holiday holiday = holidayService.getById(holidayId);
 
-        if (holiday != null && holiday.getJustification() != null) {
-            File downloadFile = new File(holiday.getJustification());
-            if (downloadFile.exists()) {
-                FileInputStream inStream = new FileInputStream(downloadFile);
-
-                resp.setContentType("holiday/octet-stream");
-                resp.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName());
-
-                OutputStream outStream = resp.getOutputStream();
-                byte[] buffer = new byte[4096];
-                int bytesRead = -1;
-
-                while ((bytesRead = inStream.read(buffer)) != -1) {
-                    outStream.write(buffer, 0, bytesRead);
-                }
-
-                inStream.close();
-                outStream.close();
-            } else {
-                resp.getWriter().print("justification file not found!");
+            if (holiday == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Holiday not found");
+                return;
             }
-        } else {
-            resp.getWriter().print("holiday or justification not found!");
+
+            String fileName = holidayService.getJustificationFileName(holiday);
+            if (fileName == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Justification not found");
+                return;
+            }
+
+            resp.setContentType("application/octet-stream");
+            resp.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+            try (OutputStream outStream = resp.getOutputStream()) {
+                holidayService.downloadJustification(holiday, outStream);
+            }
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid holiday ID");
+        } catch (IllegalArgumentException | FileNotFoundException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        } catch (IOException e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error downloading file");
         }
     }
 
@@ -195,7 +148,7 @@ public class HolidayServlet extends HttpServlet {
         String newStatus = req.getParameter("status");
 
         try {
-            HolidayService.update(holidayId, newStatus);
+            holidayService.update(holidayId, newStatus);
             resp.sendRedirect("holidays?action=getAllHolidays");
         } catch (IllegalArgumentException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");

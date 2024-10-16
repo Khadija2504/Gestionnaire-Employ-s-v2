@@ -2,6 +2,7 @@ package com.hrmanagementsystem.util;
 
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.enums.JobOfferStatus;
+import com.hrmanagementsystem.service.JobOfferService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -15,7 +16,10 @@ import java.util.concurrent.TimeUnit;
 @WebListener
 public class JobOfferStatusUpdater implements ServletContextListener {
     private ScheduledExecutorService scheduler;
-
+    protected JobOfferService jobOfferService;
+    public JobOfferStatusUpdater(JobOfferService jobOfferService) {
+        this.jobOfferService = jobOfferService;
+    }
     @Override
     public void contextInitialized(ServletContextEvent event) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -28,13 +32,13 @@ public class JobOfferStatusUpdater implements ServletContextListener {
     }
 
     private void updateExpiredJobOffers() {
-        List<JobOffer> openJobOffers = JobOfferDAO.getByStatus(JobOfferStatus.Open);
+        List<JobOffer> openJobOffers = jobOfferService.getByStatus(JobOfferStatus.Open);
         LocalDateTime now = LocalDateTime.now();
 
         for (JobOffer offer : openJobOffers) {
             if (offer.getExpiredDate().isBefore(now)) {
                 offer.setStatus(JobOfferStatus.Expired);
-                JobOfferDAO.update(offer);
+                jobOfferService.update(offer);
             }
         }
     }

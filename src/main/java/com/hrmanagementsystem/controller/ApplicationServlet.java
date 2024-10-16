@@ -7,6 +7,7 @@ import com.hrmanagementsystem.entity.Application;
 import com.hrmanagementsystem.entity.JobOffer;
 import com.hrmanagementsystem.entity.Notification;
 import com.hrmanagementsystem.enums.ApplicationStatus;
+import com.hrmanagementsystem.service.ApplicationService;
 import com.hrmanagementsystem.util.EmailSender;
 
 import javax.servlet.annotation.MultipartConfig;
@@ -27,6 +28,11 @@ import java.util.Objects;
 
 @MultipartConfig
 public class ApplicationServlet extends HttpServlet {
+    protected ApplicationService applicationService;
+    public ApplicationServlet(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
+    public ApplicationServlet(){}
     private static final String UPLOAD_DIR = "uploads";
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -73,18 +79,8 @@ public class ApplicationServlet extends HttpServlet {
 //        }
 //        Application application = new Application(title, description, filePath, appliedDate, phoneNumber, jobOffer, ApplicationStatus.Pending);
 //        ApplicationDAO.save(application);
+        applicationService.save(title, description, phoneNumber, appliedDate, uploadFilePath, jobOfferId, filePart);
         resp.sendRedirect("jobOffer?action=JobOfferList");
-    }
-
-    private String extractFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        String[] tokens = contentDisp.split(";");
-        for (String token : tokens) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf("=") + 2, token.length() - 1);
-            }
-        }
-        return "";
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -111,7 +107,7 @@ public class ApplicationServlet extends HttpServlet {
 
     public void getAllApplications(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int jobOfferId = Integer.parseInt(req.getParameter("jobOfferId"));
-        List<Application> applications = ApplicationDAO.getAllByJobOfferId(jobOfferId);
+        List<Application> applications = applicationService.getAllByJobOfferId(jobOfferId);
 
             for (Application app : applications) {
                 File resumeFile = new File(app.getResume());
@@ -131,7 +127,7 @@ public class ApplicationServlet extends HttpServlet {
         String statusParam = req.getParameter("status");
         ApplicationStatus status = ApplicationStatus.valueOf(statusParam);
 
-        List<Application> filteredApplications = ApplicationDAO.getFilteredApplications(jobOfferId, status);
+        List<Application> filteredApplications = applicationService.getFilteredApplications(jobOfferId, status);
 
             for (Application app : filteredApplications) {
                 File resumeFile = new File(app.getResume());
@@ -148,31 +144,25 @@ public class ApplicationServlet extends HttpServlet {
 
     public void downloadResume(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int applicationId = Integer.parseInt(req.getParameter("applicationId"));
-        Application application = ApplicationDAO.getbyId(applicationId);
 
-        if (application != null && application.getResume() != null) {
-            File downloadFile = new File(application.getResume());
-            if (downloadFile.exists()) {
-                FileInputStream inStream = new FileInputStream(downloadFile);
-
-                resp.setContentType("application/octet-stream");
-                resp.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName());
-
-                OutputStream outStream = resp.getOutputStream();
-                byte[] buffer = new byte[4096];
-                int bytesRead = -1;
-
-                while ((bytesRead = inStream.read(buffer)) != -1) {
-                    outStream.write(buffer, 0, bytesRead);
-                }
-
-                inStream.close();
-                outStream.close();
-            } else {
-                resp.getWriter().print("Resume file not found!");
+        try {
+            Application application = applicationService.getById(applicationId);
+            if (application == null || application.getResume() == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Application or resume not found!");
+                return;
             }
-        } else {
-            resp.getWriter().print("Application or resume not found!");
+
+            File downloadFile = new File(application.getResume());
+            resp.setContentType("application/octet-stream");
+            resp.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName());
+
+            try (OutputStream outStream = resp.getOutputStream()) {
+                applicationService.downloadResume(applicationId, outStream);
+            }
+        } catch (IllegalArgumentException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        } catch (IOException e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error downloading resume: " + e.getMessage());
         }
     }
     private void updateApplicationStatus(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -180,41 +170,17 @@ public class ApplicationServlet extends HttpServlet {
         String newStatus = req.getParameter("status");
         int jobOfferId = Integer.parseInt(req.getParameter("jobOfferId"));
 
-        Application application = ApplicationDAO.getbyId(appId);
-        if (application == null) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Application not found");
-            return;
-        }
-
         try {
-            ApplicationStatus status = ApplicationStatus.valueOf(newStatus);
-            application.setStatus(status);
-            ApplicationDAO.updateStatus(application);
-
-            String candidateEmail = application.getCandidateEmail();
-            if(Objects.equals(status.toString(), "Accepted")) {
-                String message = "ur application has been accepted for the job offer that u applied !!";
-                EmailSender.sendEmail(candidateEmail, "Application accepted", message);
-
-                Notification notification = new Notification();
-                notification.setMessage(message);
-                notification.setNotificationDate(new Date());
-                NotificationDAO.save(notification);
-
-                resp.sendRedirect("application?action=getAllApplications&jobOfferId=" + jobOfferId);
-            } else {
-                String message = "ur application has been refused for the job offer that u applied, good luck in the next job offer!";
-                EmailSender.sendEmail(candidateEmail, "Application refused", message);
-
-                Notification notification = new Notification();
-                notification.setMessage(message);
-                notification.setNotificationDate(new Date());
-                NotificationDAO.save(notification);
-
-                resp.sendRedirect("application?action=getAllApplications&jobOfferId=" + jobOfferId);
-            }
+            applicationService.updateApplicationStatus(appId, newStatus);
+            resp.sendRedirect("application?action=getAllApplications&jobOfferId=" + jobOfferId);
         } catch (IllegalArgumentException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
+            if (e.getMessage().equals("Application not found")) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+            } else {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            }
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while updating the application status");
         }
     }
 }
